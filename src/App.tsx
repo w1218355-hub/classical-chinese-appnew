@@ -101,7 +101,7 @@ interface DialogueMessage {
   timestamp: string
 }
 
-interface AncientPost {
+export interface AncientPost {
   id: number
   userId: string
   userName: string
@@ -158,7 +158,7 @@ interface ChapterStructure {
   }>
 }
 
-type Page = 'home' | 'classic' | 'quiz' | 'result' | 'words' | 'words-quiz' | 'words-result' | 'grammar' | 'pastpaper' | 'wrongbook' | 'stats' | 'dialogue' | 'puzzle' | 'ancient-circle' | 'knowledge' | 'rhetoric' | 'structure'
+type Page = 'home' | 'classic' | 'quiz' | 'result' | 'words' | 'words-learn' | 'words-fill' | 'words-quiz' | 'words-result' | 'grammar' | 'pastpaper' | 'wrongbook' | 'stats' | 'dialogue' | 'puzzle' | 'ancient-circle' | 'knowledge' | 'rhetoric' | 'structure'
 
 type ModuleCard = {
   id: Page
@@ -1344,7 +1344,7 @@ function App() {
   const [answerHistory, setAnswerHistory] = useState<Array<{ questionId: number; correct: boolean; type: QuestionType }>>([])
   const [wordsIndex, setWordsIndex] = useState(0)
   const [wordsScore, setWordsScore] = useState(0)
-  const [wordsSelected, setWordsSelected] = useState<string | null>(null)
+  const [, setWordsSelected] = useState<string | null>(null)
   const [wordsAnswered, setWordsAnswered] = useState(false)
   // 三阶段学习
   const [wordsPhase, setWordsPhase] = useState<1|2|3>(1)
@@ -1615,7 +1615,6 @@ function App() {
   const pastpaperYears = Array.from(new Set(pastpaperQuestions.map(q => q.year))).sort((a, b) => b - a)
 
   const progress = (currentIndex / filteredQuestions.length) * 100
-  const wordsProgress = ((wordsIndex + 1) / wordCards.length) * 100
 
   const addWrongbook = (question: Question) => {
     setWrongbook(prev => {
@@ -1800,24 +1799,6 @@ function App() {
     setWordsPhase3Score(0)
     setWordsPhase3Results([])
     setPage('words-learn')
-  }
-
-  const handleWordAnswer = (option: string) => {
-    if (wordsAnswered) return
-    setWordsSelected(option)
-    setWordsAnswered(true)
-    if (currentWordCard.correctAnswer.includes(option)) setWordsScore(s => s + 1)
-  }
-
-  const handleNextWord = () => {
-    if (wordsIndex + 1 < wordCards.length) {
-      setWordsIndex(wordsIndex + 1)
-      setWordsSelected(null)
-      setWordsAnswered(false)
-    } else {
-      recordModuleResult(currentUserId, 'words', wordsScore, wordCards.length)
-      setPage('words-result')
-    }
   }
 
   // ===== 阶段1：认识卡片 =====
@@ -2522,10 +2503,6 @@ function App() {
     )
   }
 
-  // ==================== 实词虚词专项：阶段2 选词义 ====================
-  if (page === 'words-learn' && wordsPhase === 2) {
-    // 这段不会到达，阶段2通过 wordsPhase 控制，放在同一个 page 下
-  }
 
   if (page === 'words-quiz') {
     const card = currentPhase2Card
