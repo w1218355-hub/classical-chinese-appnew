@@ -200,27 +200,27 @@ const questions: Question[] = [
   },
   {
     id: 4, type: 'vocab', tag: '詞義辨析',
-    word: '斟酌', sentence: '陛下亦宜自謀，以諮諏善道，察納雅言',
+    word: '斟酌', sentence: '至於斟酌損益，進盡忠言，則攸之、禕、允之任也',
     image: '/zhenzhuo.png',
     options: ['倒酒喝酒', '仔細考慮、權衡', '詢問他人', '隨意決定'],
     correctAnswer: '仔細考慮、權衡',
-    explanation: '「斟酌」本義為倒酒，引申為「仔細考慮、權衡利弊」，此處指諸葛亮請後主慎重處理政務。'
+    explanation: '「斟酌」本義為倒酒，引申為「仔細考慮、權衡利弊」。此處諸葛亮將斟酌政務損益的責任託付給郭攸之、費禕、董允等人。'
   },
   {
     id: 5, type: 'vocab', tag: '詞義辨析',
-    word: '駑鈍', sentence: '臣雖駑鈍，猥自枉屈',
+    word: '駑鈍', sentence: '庶竭駑鈍，攘除姦凶',
     image: '/nudum.png',
     options: ['馬跑得快', '才能低下、愚笨', '性格固執', '身體虛弱'],
     correctAnswer: '才能低下、愚笨',
-    explanation: '「駑」指劣馬，「鈍」指不鋒利。諸葛亮以「駑鈍」自謙，表示自己才能平庸。'
+    explanation: '「駑」指劣馬，「鈍」指刀刃不鋒利。諸葛亮以「駑鈍」自謙，表示願竭盡自己平庸的才能，剷除奸邪兇惡之敵。'
   },
   {
     id: 6, type: 'vocab', tag: '詞義辨析',
-    word: '託付', sentence: '受任於敗軍之際，奉命於危難之間',
+    word: '託付', sentence: '恐託付不效，以傷先帝之明',
     image: '/tuofu.png',
     options: ['隨便交代', '鄭重委託重任', '借錢給人', '寫信聯絡'],
     correctAnswer: '鄭重委託重任',
-    explanation: '先帝白帝城託孤，將蜀漢大業鄭重委託給諸葛亮，體現了君臣之間深厚的信任。'
+    explanation: '「託付」指劉備白帝城託孤，將蜀漢大業鄭重委託給諸葛亮。此句表達諸葛亮唯恐辜負先帝所託，體現了深沉的責任感。'
   },
   {
     id: 7, type: 'sentence', tag: '特殊句式',
