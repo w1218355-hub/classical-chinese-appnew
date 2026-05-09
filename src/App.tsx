@@ -1343,11 +1343,11 @@ function App() {
   const [userStats, setUserStats] = useState<UserStudyStat[]>([])
   const [answerHistory, setAnswerHistory] = useState<Array<{ questionId: number; correct: boolean; type: QuestionType }>>([])
   const [wordsIndex, setWordsIndex] = useState(0)
-  const [wordsScore, setWordsScore] = useState(0)
+  const [, setWordsScore] = useState(0)
   const [, setWordsSelected] = useState<string | null>(null)
-  const [wordsAnswered, setWordsAnswered] = useState(false)
+  const [, setWordsAnswered] = useState(false)
   // 三阶段学习
-  const [wordsPhase, setWordsPhase] = useState<1|2|3>(1)
+  const [, setWordsPhase] = useState<1|2|3>(1)
   const [wordsFlipped, setWordsFlipped] = useState(false)
   const [wordsFamiliar, setWordsFamiliar] = useState<Set<number>>(new Set())
   const [wordsUnfamiliar, setWordsUnfamiliar] = useState<Set<number>>(new Set())
@@ -1605,7 +1605,6 @@ function App() {
     setPastpaperSelected(null)
     setPastpaperAnswered(false)
   }, [pastpaperYear, pastpaperType])
-  const currentWordCard = wordCards[wordsIndex]
 
   const filteredPastpaperQuestions = pastpaperQuestions.filter(q =>
     (pastpaperYear === 'all' || q.year === pastpaperYear) &&
