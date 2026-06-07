@@ -187,7 +187,7 @@ interface ChapterStructure {
   }>
 }
 
-type Page = 'home' | 'classic' | 'quiz' | 'result' | 'words' | 'words-learn' | 'words-fill' | 'words-quiz' | 'words-result' | 'grammar' | 'pastpaper' | 'wrongbook' | 'stats' | 'dialogue' | 'puzzle' | 'ancient-circle'
+type Page = 'home' | 'classic' | 'quiz' | 'result' | 'words' | 'words-learn' | 'words-fill' | 'words-quiz' | 'words-result' | 'grammar' | 'pastpaper' | 'pastpaper-result' | 'wrongbook' | 'stats' | 'dialogue' | 'puzzle' | 'ancient-circle'
 
 type ModuleCard = {
   id: Page
