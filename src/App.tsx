@@ -2259,10 +2259,10 @@ function App() {
 
   // ===== 模型設置 =====
   const [aiModel, setAiModel] = useState(() => localStorage.getItem('ai_model') || 'deepseek-v4-flash')
-  const [arkApiKey, setArkApiKey] = useState(() => localStorage.getItem('ark_api_key') || 'REDACTED')
+  const [arkApiKey, setArkApiKey] = useState(() => localStorage.getItem('ark_api_key') || '')
   const [showModelSettings, setShowModelSettings] = useState(false)
   const [modelInput, setModelInput] = useState(() => localStorage.getItem('ai_model') || 'deepseek-v4-flash')
-  const [keyInput, setKeyInput] = useState(() => localStorage.getItem('ark_api_key') || 'REDACTED')
+  const [keyInput, setKeyInput] = useState(() => localStorage.getItem('ark_api_key') || '')
 
   const handleSaveSettings = () => {
     setAiModel(modelInput)
@@ -2668,13 +2668,13 @@ function App() {
       setPastpaperSelected(null)
       setPastpaperAnswered(false)
     } else {
-      setPastpaperIndex(0)
-      setPastpaperSelected(null)
-      setPastpaperAnswered(false)
+      setScore(pastpaperScore)
+      setPage('pastpaper-result')
     }
   }
 
   const clearWrongbook = () => {
+    if (!window.confirm('確定要清空所有錯題嗎？此操作無法撤銷。')) return
     setWrongbook([])
     localStorage.removeItem('wrongbookEntries')
   }
@@ -2876,7 +2876,7 @@ function App() {
   if (page === 'home') {
     return (
       <div
-        className="min-h-screen bg-[#fafaf8] text-gray-900 relative"
+        className="min-h-screen bg-[#fafaf8] text-gray-900 relative animate-fadeIn"
         style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
       >
         {/* 頂部導航欄 */}
@@ -2893,6 +2893,12 @@ function App() {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-gray-400 hidden md:block">香港 DSE 中文科備考</span>
+              <button
+                onClick={() => setIsPanelCollapsed(false)}
+                className="lg:hidden flex items-center gap-1 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-full text-xs font-medium text-emerald-700 transition-all"
+              >
+                📊 統計/登錄
+              </button>
               <div className="relative">
                 <button
                   onClick={() => setShowModelSettings(!showModelSettings)}
@@ -2938,7 +2944,9 @@ function App() {
         </header>
 
         {/* Hero 區域 */}
-        <div className="max-w-5xl mx-auto px-6 pt-10 pb-6">
+        <div className="max-w-5xl mx-auto px-6 pt-10 pb-6 relative">
+          <div className="absolute right-0 top-0 w-96 h-96 bg-gradient-to-br from-emerald-50 via-amber-50/50 to-transparent rounded-full blur-3xl opacity-60 -z-10" />
+          <div className="absolute right-20 top-10 text-8xl opacity-[0.04] select-none -z-10" style={{ fontFamily: "'Noto Serif SC', serif" }}>文</div>
           <div className="flex items-end gap-4 mb-1">
             <h1
               className="text-4xl font-black text-gray-900 leading-tight"
@@ -2961,13 +2969,13 @@ function App() {
                 key={mod.id}
                 onClick={() => {
                   if (mod.status !== 'live') return
-                  if (mod.id === 'grammar') startGrammar()
+                  if (mod.id === 'grammar') setPage('grammar')
                   else if (mod.id === 'pastpaper') startPastpaper()
                   else setPage(mod.id)
                 }}
                 className={`
                   relative text-left bg-white rounded-2xl border border-gray-100 border-l-4 ${mod.accentColor}
-                  p-5 shadow-sm transition-all duration-200 group
+                  p-5 shadow-sm transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:ring-offset-2
                   ${mod.status === 'live'
                     ? 'hover:-translate-y-1 hover:shadow-md cursor-pointer'
                     : 'opacity-60 cursor-default'
@@ -3018,7 +3026,8 @@ function App() {
 
         {/* 右側統計與登錄面板 */}
         {!isPanelCollapsed ? (
-          <div className="hidden lg:flex lg:flex-col lg:gap-4 fixed top-28 right-6 w-80 z-20">
+          <>
+            <div className="hidden lg:flex lg:flex-col lg:gap-4 fixed top-28 right-6 w-80 z-20">
             <div className="flex justify-end">
               <button
                 onClick={() => setIsPanelCollapsed(true)}
@@ -3105,6 +3114,53 @@ function App() {
               )}
             </div>
           </div>
+
+          {/* 移動端/平板遮罩面板 */}
+          <div className="lg:hidden fixed inset-0 z-50">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setIsPanelCollapsed(true)} />
+            <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl overflow-y-auto">
+              <div className="flex justify-end p-3">
+                <button onClick={() => setIsPanelCollapsed(true)} className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600 shadow-sm hover:bg-gray-50">收起 ✕</button>
+              </div>
+              <div className="px-4 pb-6 space-y-4">
+                <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <div><div className="text-xs uppercase tracking-[0.18em] text-gray-400 mb-1">統計中心</div><h3 className="text-lg font-bold text-gray-900">班級匯總</h3></div>
+                    <button onClick={() => { setIsPanelCollapsed(true); setPage('stats') }} className="text-xs text-emerald-600 hover:text-emerald-700">查看詳情</button>
+                  </div>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p>已註冊同學：<span className="font-semibold text-gray-900">{accounts.length}</span></p>
+                    <p>已記錄成績：<span className="font-semibold text-gray-900">{userStats.length}</span> 位</p>
+                    <p>當前登錄：<span className="font-semibold text-gray-900">{currentUser ? currentUser.name : '未登錄'}</span></p>
+                  </div>
+                </div>
+                <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-bold text-gray-900">帳號登錄</h3>
+                    <button onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setAuthError(null) }} className="text-xs text-emerald-600 hover:text-emerald-700">{authMode === 'login' ? '註冊' : '登錄'}</button>
+                  </div>
+                  {currentUser ? (
+                    <div>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold text-sm">{currentUser.name[0]}</div>
+                        <div><p className="font-semibold text-gray-900 text-sm">{currentUser.name}</p><p className="text-xs text-gray-400">{currentUser.email}</p></div>
+                      </div>
+                      <button onClick={handleLogout} className="w-full rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 py-2 text-sm font-semibold hover:bg-rose-100 transition-colors">退出登錄</button>
+                    </div>
+                  ) : (
+                    <form onSubmit={(e: React.FormEvent) => { e.preventDefault(); authMode === 'login' ? handleLogin() : handleRegister() }} className="space-y-2">
+                      {authMode === 'register' && <input value={authName} onChange={e => setAuthName(e.target.value)} placeholder="姓名" className="w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-400" required />}
+                      <input value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="郵箱" type="email" className="w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-400" required />
+                      <input value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="密碼" type="password" className="w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-400" required minLength={4} />
+                      {authError && <p className="text-xs text-rose-500">{authError}</p>}
+                      <button type="submit" className="w-full rounded-2xl bg-emerald-500 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors">{authMode === 'login' ? '登錄' : '註冊'}</button>
+                    </form>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          </>
         ) : (
           <div className="hidden lg:flex fixed top-28 right-6 z-20">
             <button
@@ -3341,7 +3397,7 @@ function App() {
 
             <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm p-5 md:p-6">
               <div className="rounded-[28px] overflow-hidden border border-gray-100 bg-gray-50 aspect-[4/3] mb-5">
-                <img src={wordCards[0].image} alt={wordCards[0].word} className="w-full h-full object-cover" />
+                <img src={wordCards[0].image} alt={wordCards[0].word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
               </div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-semibold">示例卡片</span>
@@ -3395,7 +3451,7 @@ function App() {
           <div className="grid md:grid-cols-[0.95fr_1.05fr] gap-6 items-stretch">
             {/* 圖片 */}
             <div className="rounded-[28px] overflow-hidden border border-gray-100 bg-gray-50 min-h-[240px]">
-              <img src={card.image} alt={card.word} className="w-full h-full object-cover" />
+              <img src={card.image} alt={card.word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
             </div>
             {/* 內容 */}
             <div className="flex flex-col justify-between">
@@ -3468,7 +3524,7 @@ function App() {
         <div className="bg-white rounded-[32px] p-5 md:p-6 shadow-sm max-w-2xl w-full border border-gray-100">
           <div className="grid md:grid-cols-[0.95fr_1.05fr] gap-6 items-stretch">
             <div className="rounded-[28px] overflow-hidden border border-gray-100 bg-gray-50 min-h-[280px]">
-              <img src={card.image} alt={card.word} className="w-full h-full object-cover" />
+              <img src={card.image} alt={card.word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center justify-between gap-3 mb-3">
@@ -3557,7 +3613,7 @@ function App() {
         <div className="bg-white rounded-[32px] p-5 md:p-6 shadow-sm max-w-2xl w-full border border-gray-100">
           <div className="grid md:grid-cols-[0.95fr_1.05fr] gap-6 items-stretch">
             <div className="rounded-[28px] overflow-hidden border border-gray-100 bg-gray-50 min-h-[240px]">
-              <img src={card.image} alt={card.word} className="w-full h-full object-cover" />
+              <img src={card.image} alt={card.word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center justify-between mb-3">
@@ -3694,7 +3750,7 @@ function App() {
       <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
         <div className="max-w-5xl w-full">
           <div className="mb-6 flex items-center gap-3">
-            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回主頁</button>
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回</button>
             <div className="text-sm text-gray-500">歷年真題練習 · 共 {filteredPastpaperQuestions.length} 題</div>
           </div>
 
@@ -3773,7 +3829,7 @@ function App() {
                 <div className="grid gap-3">
                   {currentPastpaperQuestion.options.map((option) => {
                     const buttonStyle = !pastpaperAnswered
-                      ? 'bg-white border-gray-200 hover:border-rose-400 hover:bg-rose-50 text-gray-800 cursor-pointer'
+                      ? 'bg-white border-gray-200 hover:border-emerald-400 hover:bg-emerald-50 text-gray-800 cursor-pointer'
                       : option === currentPastpaperQuestion.correctAnswer
                         ? 'bg-emerald-50 border-emerald-400 text-emerald-800'
                         : option === pastpaperSelected
@@ -3842,7 +3898,7 @@ function App() {
       <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
         <div className="max-w-5xl w-full">
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回主頁</button>
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回</button>
             <div className="text-sm text-gray-500">錯題集 · 共 {wrongbook.length} 題</div>
           </div>
 
@@ -3957,7 +4013,176 @@ function App() {
         </div>
       </div>
     )
-  }  // ==================== 時空對話框頁面 ====================
+  }
+  // ==================== 句式結構專練：介紹頁 ====================
+  if (page === 'grammar') {
+    return (
+      <div className="min-h-screen bg-[#fafaf8]" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
+        <header className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+          <div className="max-w-4xl mx-auto px-6 py-3 flex items-center gap-3">
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 transition-colors text-sm font-medium">← 返回</button>
+            <div className="w-px h-4 bg-gray-200" />
+            <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: "'Noto Serif SC', serif" }}>⚙️ 句式結構專練</span>
+          </div>
+        </header>
+
+        <div className="max-w-4xl mx-auto px-6 pt-10 pb-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-sm font-semibold mb-4">
+            <span>語法專項練習</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            <span>{grammarQuestions.length} 題</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-4" style={{ fontFamily: "'Noto Serif SC', serif" }}>
+            掌握文言句式，
+            <br />
+            讀懂古文結構。
+          </h1>
+          <p className="text-gray-500 leading-relaxed text-base md:text-lg max-w-2xl mb-8">
+            系統練習判斷句、倒裝句、被動句、省略句等 DSE 常考句式，在真實文句中學會分辨句子結構，提升文言文翻譯與理解能力。
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-4 mb-8">
+            {[
+              { emoji: '✅', title: '判斷句', desc: '「……也」、「乃……」、「即……」等典型判斷句式', example: '此誠危急存亡之秋也' },
+              { emoji: '🔄', title: '倒裝句', desc: '賓語前置、狀語後置、定語後置等語序變化', example: '受任於敗軍之際' },
+              { emoji: '📥', title: '被動句', desc: '「見……於」、「為……所」、「被」等被動標誌', example: '吾長見笑於大方之家' },
+              { emoji: '✂️', title: '省略句', desc: '主語省略、賓語省略、介詞省略等常見省略', example: '一鼓作氣，再而衰，三而竭' },
+            ].map((item) => (
+              <div key={item.title} className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">{item.emoji}</span>
+                  <h3 className="font-bold text-gray-900">{item.title}</h3>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed mb-2">{item.desc}</p>
+                <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-1.5 italic">例：「{item.example}」</p>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => startGrammar()}
+            className="px-8 py-4 rounded-2xl bg-amber-500 hover:bg-amber-600 transition-colors text-white font-bold shadow-sm text-lg"
+          >
+            開始練習 ({grammarQuestions.length} 題) →
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+
+  // ==================== 統計中心頁面 ====================
+  if (page === 'stats') {
+    const currentUserStats = currentUserId ? userStats.find(s => s.userId === currentUserId) : undefined
+    const totalUsers = accounts.length
+    const usersWithStats = userStats.length
+    const allTimeAvg = usersWithStats > 0
+      ? Math.round(userStats.reduce((sum, s) => sum + Math.round((s.vocabCorrect + s.sentenceCorrect + s.parseCorrect + s.wordsCorrect + s.pastpaperCorrect) / Math.max(1, s.vocabTotal + s.sentenceTotal + s.parseTotal + s.wordsTotal + s.pastpaperTotal) * 100), 0) / usersWithStats)
+      : 0
+
+    return (
+      <div className="min-h-screen bg-[#fafaf8]" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
+        <header className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+          <div className="max-w-4xl mx-auto px-6 py-3 flex items-center gap-3">
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 transition-colors text-sm font-medium">← 返回</button>
+            <div className="w-px h-4 bg-gray-200" />
+            <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: "'Noto Serif SC', serif" }}>📊 統計中心</span>
+          </div>
+        </header>
+
+        <div className="max-w-4xl mx-auto px-6 pt-10 pb-20">
+          <h1 className="text-3xl font-black text-gray-900 mb-2" style={{ fontFamily: "'Noto Serif SC', serif" }}>學習統計</h1>
+          <p className="text-gray-500 text-sm mb-8">班級匯總與個人學習數據</p>
+
+          {/* 班級概覽卡片 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            {[
+              { label: '已註冊同學', value: totalUsers, emoji: '👥', color: 'bg-blue-50 text-blue-600' },
+              { label: '已記錄成績', value: usersWithStats, emoji: '📝', color: 'bg-emerald-50 text-emerald-600' },
+              { label: '全班正確率', value: allTimeAvg + '%', emoji: '📊', color: 'bg-amber-50 text-amber-600' },
+              { label: '錯題總數', value: wrongbook.length, emoji: '📕', color: 'bg-violet-50 text-violet-600' },
+            ].map((item) => (
+              <div key={item.label} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center">
+                <div className="text-2xl mb-1">{item.emoji}</div>
+                <div className="text-2xl font-bold text-gray-900">{item.value}</div>
+                <div className="text-xs text-gray-500 mt-1">{item.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* 個人統計 */}
+          {currentUserStats ? (
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">我的學習數據</h2>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {[
+                  { label: '詞義辨析', correct: currentUserStats.vocabCorrect, total: currentUserStats.vocabTotal },
+                  { label: '特殊句式', correct: currentUserStats.sentenceCorrect, total: currentUserStats.sentenceTotal },
+                  { label: '拆句理解', correct: currentUserStats.parseCorrect, total: currentUserStats.parseTotal },
+                  { label: '實詞虛詞', correct: currentUserStats.wordsCorrect, total: currentUserStats.wordsTotal },
+                  { label: '歷史真題', correct: currentUserStats.pastpaperCorrect, total: currentUserStats.pastpaperTotal },
+                ].map((item) => {
+                  const pct = item.total > 0 ? Math.round((item.correct / item.total) * 100) : 0
+                  return (
+                    <div key={item.label} className="bg-gray-50 rounded-2xl p-3 text-center">
+                      <div className="text-xs text-gray-500 mb-1">{item.label}</div>
+                      <div className="text-lg font-bold text-gray-900">{item.correct}<span className="text-sm text-gray-300">/{item.total || 0}</span></div>
+                      <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                        <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: pct + '%' }} />
+                      </div>
+                      <div className="text-xs text-emerald-600 mt-1">{pct}%</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-6 text-center">
+              <div className="text-4xl mb-3">🔐</div>
+              <h2 className="text-lg font-bold text-gray-900 mb-2">請先登錄以查看個人統計</h2>
+              <p className="text-sm text-gray-500 mb-4">登錄後可以追蹤你的學習進度和答題記錄</p>
+              <button
+                onClick={() => setIsPanelCollapsed(false)}
+                className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors"
+              >
+                回主頁登錄 →
+              </button>
+            </div>
+          )}
+
+          {/* 最近註冊用戶 */}
+          {accounts.length > 0 && (
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">已註冊同學 ({accounts.length})</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {accounts.slice(0, 20).map((acct) => {
+                  const stats = userStats.find(s => s.userId === acct.id)
+                  const avgPct = stats
+                    ? Math.round((stats.vocabCorrect + stats.sentenceCorrect + stats.parseCorrect + stats.wordsCorrect + stats.pastpaperCorrect) / Math.max(1, stats.vocabTotal + stats.sentenceTotal + stats.parseTotal + stats.wordsTotal + stats.pastpaperTotal) * 100)
+                    : null
+                  return (
+                    <div key={acct.id} className="flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50">
+                      <div>
+                        <span className="font-medium text-gray-900 text-sm">{acct.name}</span>
+                        <span className="text-xs text-gray-400 ml-2">{acct.email}</span>
+                      </div>
+                      {avgPct !== null ? (
+                        <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">正確率 {avgPct}%</span>
+                      ) : (
+                        <span className="text-xs text-gray-400">尚無記錄</span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // ==================== 時空對話框頁面 ====================
   if (page === 'dialogue') {
 
 
@@ -4079,6 +4304,7 @@ function App() {
 
     // 清除全部記錄
     const handleClearAll = () => {
+      if (!window.confirm('確定要清空所有對話記錄嗎？此操作無法撤銷。')) return
       const initMsg: DialogueMessage[] = [{
         id: 1, role: 'author',
         content: currentAuthorConfig.greeting,
@@ -4094,6 +4320,7 @@ function App() {
     // 刪除選中的消息
     const handleDeleteSelected = () => {
       if (dialogueSelectedMsgs.length === 0) return
+      if (!window.confirm(`確定要刪除已選的 ${dialogueSelectedMsgs.length} 條消息嗎？`)) return
       const remaining = dialogueMessages.filter(m => !dialogueSelectedMsgs.includes(m.id))
       setDialogueMessages(remaining)
       saveMessages(remaining)
@@ -4392,7 +4619,7 @@ function App() {
       return (
         <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
           <div className="max-w-2xl w-full">
-            <button onClick={goHome} className="mb-4 text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回主頁</button>
+            <button onClick={goHome} className="mb-4 text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回</button>
 
             <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-4 text-center">
               <div className="text-4xl mb-2">🎭</div>
@@ -5135,7 +5362,7 @@ function App() {
         <div className="max-w-3xl mx-auto px-4 py-6">
           {/* 頂部導航 */}
           <div className="flex items-center justify-between mb-5">
-            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回主頁</button>
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回</button>
             <div className="text-center">
               <h1 className="text-lg font-bold text-gray-900">古風朋友圈</h1>
               <p className="text-xs text-gray-400">古人也發朋友圈</p>
@@ -5228,6 +5455,54 @@ function App() {
     )
   }
 
+
+  // ==================== Pastpaper 成績單 ====================
+  if (page === 'pastpaper-result') {
+    const total = filteredPastpaperQuestions.length
+    const pct = total > 0 ? Math.round((score / total) * 100) : 0
+    return (
+      <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
+        <div className="bg-white rounded-3xl p-10 shadow-sm max-w-md w-full border border-gray-100 text-center">
+          <div className="text-6xl mb-6">{pct === 100 ? '🏆' : pct >= 60 ? '👍' : '💪'}</div>
+          <h2
+            className="text-3xl font-black text-gray-900 mb-2"
+            style={{ fontFamily: "'Noto Serif SC', serif" }}
+          >
+            {pct === 100 ? '完美！' : pct >= 60 ? '不錯！' : '繼續加油！'}
+          </h2>
+          <p className="text-gray-400 text-sm mb-6">歷史真題刷題</p>
+          <div className="text-5xl font-bold text-emerald-500 mb-2">
+            {score} <span className="text-2xl text-gray-300">/ {total}</span>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-2 mb-8 mt-4">
+            <div className="bg-emerald-400 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={goHome}
+              className="py-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors font-semibold text-gray-700"
+            >
+              返回主頁
+            </button>
+            <button
+              onClick={() => {
+                setScore(0)
+                setPastpaperScore(0)
+                setPastpaperIndex(0)
+                setPastpaperSelected(null)
+                setPastpaperAnswered(false)
+                setPage('pastpaper')
+              }}
+              className="py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 transition-colors font-bold text-white"
+            >
+              再來一次
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // ==================== 成績單 ====================
   if (page === 'result') {
     const total = filteredQuestions.length
@@ -5259,8 +5534,8 @@ function App() {
           <div className="text-5xl font-bold text-emerald-500 mb-2">
             {score} <span className="text-2xl text-gray-300">/ {total}</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-2.5 mb-8 mt-4">
-            <div className="bg-emerald-400 h-2.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+          <div className="w-full bg-gray-100 rounded-full h-2 mb-8 mt-4">
+            <div className="bg-emerald-400 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -5298,8 +5573,8 @@ function App() {
           </div>
           <span className="text-emerald-600 font-bold text-sm">得分 {score}</span>
         </div>
-        <div className="w-full bg-gray-100 rounded-full h-1.5">
-          <div className="bg-emerald-400 h-1.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="w-full bg-gray-100 rounded-full h-2">
+          <div className="bg-emerald-400 h-2 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
       </div>
 
@@ -5310,7 +5585,7 @@ function App() {
             {/* 左側配圖 */}
             <div className="md:w-5/12 flex-shrink-0">
               <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100">
-                <img src={currentQuestion.image} alt={currentQuestion.word} className="w-full h-full object-cover" />
+                <img src={currentQuestion.image} alt={currentQuestion.word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
               </div>
             </div>
             {/* 右側文字與選項 */}
@@ -5328,7 +5603,7 @@ function App() {
                 {currentQuestion.options.map((option) => (
                   <button
                     key={option}
-                    className={`py-3 px-4 rounded-xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
+                    className={`py-3 px-4 rounded-2xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
                     onClick={() => handleAnswer(option)}
                   >
                     <span>{option}</span>
@@ -5375,7 +5650,7 @@ function App() {
             {currentQuestion.options.map((option) => (
               <button
                 key={option}
-                className={`py-4 px-5 rounded-xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
+                className={`py-4 px-5 rounded-2xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
                 onClick={() => handleAnswer(option)}
               >
                 <span>{option}</span>
@@ -5431,7 +5706,7 @@ function App() {
             {currentQuestion.options.map((option) => (
               <button
                 key={option}
-                className={`py-4 px-5 rounded-xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
+                className={`py-4 px-5 rounded-2xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
                 onClick={() => handleAnswer(option)}
               >
                 <span>{option}</span>
