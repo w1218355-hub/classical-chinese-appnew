@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { track } from '@vercel/analytics'
 
 // ===== 題目類型定義 =====
 type QuestionType = 'vocab' | 'sentence' | 'parse'
@@ -972,6 +973,12 @@ function SubmitModal({
 // ===== 主組件 =====
 function App() {
   const [page, setPage] = useState<Page>('home')
+
+  // 追踪页面切换 — Vercel Analytics 自定义事件
+  useEffect(() => {
+    track('page_view', { page })
+  }, [page])
+
   // ===== 模型設置 =====
   const [aiModel, setAiModel] = useState(() => localStorage.getItem('ai_model') || 'deepseek-v4-flash')
   const [arkApiKey, setArkApiKey] = useState(() => localStorage.getItem('ark_api_key') || 'REDACTED')
