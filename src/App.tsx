@@ -5305,41 +5305,49 @@ function App() {
 
       {/* 詞義題 */}
       {currentQuestion.type === 'vocab' && (
-        <div className="bg-white rounded-3xl p-8 shadow-sm max-w-lg w-full border border-gray-100">
-          <div className="aspect-square bg-gray-50 rounded-2xl mb-6 overflow-hidden border border-gray-100">
-            <img src={currentQuestion.image} alt={currentQuestion.word} className="w-full h-full object-cover" />
-          </div>
-          <div className="text-center mb-6">
-            <h2
-              className="text-5xl font-black text-gray-900 mb-3"
-              style={{ fontFamily: "'Noto Serif SC', serif" }}
-            >
-              {currentQuestion.word}
-            </h2>
-            <p className="text-gray-400 italic text-sm">「{currentQuestion.sentence}」</p>
-          </div>
-          <div className="grid gap-3 mb-4">
-            {currentQuestion.options.map((option) => (
-              <button
-                key={option}
-                className={`py-4 px-5 rounded-xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
-                onClick={() => handleAnswer(option)}
-              >
-                <span>{option}</span>
-                {hasAnswered && option === currentQuestion.correctAnswer && <span className="text-emerald-500">✓</span>}
-                {hasAnswered && option === selectedOption && option !== currentQuestion.correctAnswer && <span className="text-rose-400">✗</span>}
-              </button>
-            ))}
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm max-w-2xl w-full border border-gray-100">
+          <div className="flex flex-col md:flex-row gap-5 md:gap-6">
+            {/* 左側配圖 */}
+            <div className="md:w-5/12 flex-shrink-0">
+              <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100">
+                <img src={currentQuestion.image} alt={currentQuestion.word} className="w-full h-full object-cover" />
+              </div>
+            </div>
+            {/* 右側文字與選項 */}
+            <div className="md:w-7/12 flex flex-col justify-center">
+              <div className="text-center md:text-left mb-4">
+                <h2
+                  className="text-4xl md:text-5xl font-black text-gray-900 mb-2"
+                  style={{ fontFamily: "'Noto Serif SC', serif" }}
+                >
+                  {currentQuestion.word}
+                </h2>
+                <p className="text-gray-400 italic text-sm">「{currentQuestion.sentence}」</p>
+              </div>
+              <div className="grid gap-2.5">
+                {currentQuestion.options.map((option) => (
+                  <button
+                    key={option}
+                    className={`py-3 px-4 rounded-xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
+                    onClick={() => handleAnswer(option)}
+                  >
+                    <span>{option}</span>
+                    {hasAnswered && option === currentQuestion.correctAnswer && <span className="text-emerald-500">✓</span>}
+                    {hasAnswered && option === selectedOption && option !== currentQuestion.correctAnswer && <span className="text-rose-400">✗</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           {hasAnswered && (
-            <div className="mt-2">
+            <div className="mt-5 pt-5 border-t border-gray-100">
               <div className={`text-center mb-2 text-base font-bold ${selectedOption === currentQuestion.correctAnswer ? 'text-emerald-600' : 'text-rose-500'}`}>
                 {selectedOption === currentQuestion.correctAnswer ? '答對了！' : `正確答案：${currentQuestion.correctAnswer}`}
               </div>
               <p className="text-gray-500 text-xs text-center mb-4 px-2 leading-relaxed">{currentQuestion.explanation}</p>
               <button
                 onClick={handleNext}
-                className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 transition-colors text-base font-bold text-white"
+                className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 transition-colors text-base font-bold text-white"
               >
                 {currentIndex + 1 < filteredQuestions.length ? '下一題 →' : '查看成績'}
               </button>
