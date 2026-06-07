@@ -971,11 +971,21 @@ function SubmitModal({
 
 // ===== 主組件 =====
 function App() {
-  const [page, setPage] = useState<Page>('home')
+  // 从 URL 路径读取初始页面
+  const getPageFromPath = (): Page => {
+    const path = window.location.pathname.replace(/\/+$/, '').replace(/^\//, '')
+    const validPages: Page[] = ['home', 'classic', 'quiz', 'result', 'words', 'words-learn', 'words-fill', 'words-quiz', 'words-result', 'grammar', 'pastpaper', 'wrongbook', 'stats', 'dialogue', 'puzzle', 'ancient-circle']
+    return validPages.includes(path as Page) ? (path as Page) : 'home'
+  }
 
-  // 追踪页面切换 — 更新 URL hash，Vercel Analytics 免费版可见
+  const [page, setPage] = useState<Page>(getPageFromPath)
+
+  // 页面切换时更新 URL 路径，Vercel Analytics 免费版可见
   useEffect(() => {
-    window.location.hash = page
+    const newPath = page === 'home' ? '/' : '/' + page
+    if (window.location.pathname !== newPath) {
+      window.history.pushState(null, '', newPath)
+    }
   }, [page])
 
   // ===== 模型設置 =====
