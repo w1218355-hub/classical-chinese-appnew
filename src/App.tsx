@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { track } from '@vercel/analytics'
 
 // ===== 題目類型定義 =====
 type QuestionType = 'vocab' | 'sentence' | 'parse'
@@ -974,9 +973,9 @@ function SubmitModal({
 function App() {
   const [page, setPage] = useState<Page>('home')
 
-  // 追踪页面切换 — Vercel Analytics 自定义事件
+  // 追踪页面切换 — 更新 URL hash，Vercel Analytics 免费版可见
   useEffect(() => {
-    track('page_view', { page })
+    window.location.hash = page
   }, [page])
 
   // ===== 模型設置 =====
