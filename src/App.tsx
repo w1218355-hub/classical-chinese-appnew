@@ -3189,7 +3189,7 @@ function App() {
         {/* 文本選擇器 */}
         <div className="border-b border-gray-100 bg-white/60">
           <div className="max-w-4xl mx-auto px-6 py-3">
-            <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+            <div className="flex gap-2 overflow-x-auto pb-1">
               {DSE_TEXTS.map((text) => (
                 <button
                   key={text.id}
