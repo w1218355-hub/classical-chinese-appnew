@@ -993,7 +993,7 @@ function App() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [hasAnswered, setHasAnswered] = useState(false)
   const [showSubmit, setShowSubmit] = useState(false)
-  const [isMuted, setIsMuted] = useState(true)
+
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(true)
   const [feedbacks, setFeedbacks] = useState<FeedbackSubmission[]>([]) 
   const [submitName, setSubmitName] = useState('')
@@ -1812,40 +1812,6 @@ function App() {
           </div>
         )}
 
-        {/* 左下角：小貓吉祥物 */}
-        <div className="fixed bottom-6 left-6 z-20 flex flex-col items-center gap-2">
-          {/* 聲音開關標籤 */}
-          <button
-            onClick={() => {
-              const v = document.getElementById('cat-mascot') as HTMLVideoElement
-              if (v) {
-                v.muted = !v.muted
-                setIsMuted(v.muted)
-              }
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm transition-all ${
-              isMuted
-                ? 'bg-white border-gray-200 text-gray-400 hover:border-emerald-300 hover:text-emerald-600'
-                : 'bg-emerald-50 border-emerald-300 text-emerald-600'
-            }`}
-          >
-            <span>{isMuted ? '🔇' : '🔊'}</span>
-            <span>{isMuted ? '已靜音' : '聲音開啟'}</span>
-          </button>
-          {/* 小貓視頻 */}
-          <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-white shadow-lg bg-gray-100">
-            <video
-              id="cat-mascot"
-              src="/cat.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-
         {/* 右下角：投稿按鈕 */}
         <button
           onClick={() => setShowSubmit(true)}
@@ -1948,29 +1914,6 @@ function App() {
           </div>
         </div>
 
-        {/* 左下角：小貓吉祥物 */}
-        <div className="fixed bottom-6 left-6 z-20 flex flex-col items-center gap-2">
-          <button
-            onClick={() => {
-              const v = document.getElementById('cat-mascot2') as HTMLVideoElement
-              if (v) {
-                v.muted = !v.muted
-                setIsMuted(v.muted)
-              }
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm transition-all ${
-              isMuted
-                ? 'bg-white border-gray-200 text-gray-400 hover:border-emerald-300 hover:text-emerald-600'
-                : 'bg-emerald-50 border-emerald-300 text-emerald-600'
-            }`}
-          >
-            <span>{isMuted ? '🔇' : '🔊'}</span>
-            <span>{isMuted ? '已靜音' : '聲音開啟'}</span>
-          </button>
-          <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-white shadow-lg bg-gray-100">
-            <video id="cat-mascot2" src="/cat.mp4" autoPlay loop muted playsInline className="w-full h-full object-cover" />
-          </div>
-        </div>
         {/* 投稿按鈕 */}
         <button
           onClick={() => setShowSubmit(true)}
