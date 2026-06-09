@@ -974,16 +974,12 @@ function App() {
   const [page, setPage] = useState<Page>('home')
   // ===== 模型設置 =====
   const [aiModel, setAiModel] = useState(() => localStorage.getItem('ai_model') || 'deepseek-v4-flash')
-  const [arkApiKey, setArkApiKey] = useState(() => localStorage.getItem('ark_api_key') || 'REDACTED')
   const [showModelSettings, setShowModelSettings] = useState(false)
   const [modelInput, setModelInput] = useState(() => localStorage.getItem('ai_model') || 'deepseek-v4-flash')
-  const [keyInput, setKeyInput] = useState(() => localStorage.getItem('ark_api_key') || 'REDACTED')
 
   const handleSaveSettings = () => {
     setAiModel(modelInput)
-    setArkApiKey(keyInput)
     localStorage.setItem('ai_model', modelInput)
-    localStorage.setItem('ark_api_key', keyInput)
     setShowModelSettings(false)
   }
 
@@ -1612,11 +1608,8 @@ function App() {
                           className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                           placeholder="如: deepseek-v4-flash" />
                       </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">API Key</label>
-                        <input type="password" value={keyInput} onChange={e => setKeyInput(e.target.value)}
-                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                          placeholder="ark-..." />
+                      <div className="text-xs text-gray-400 bg-gray-50 rounded-lg p-2 mt-2">
+                        API Key 由伺服器管理，無需手動輸入
                       </div>
                       <div className="text-xs text-gray-400 bg-gray-50 rounded-lg px-3 py-2">
                         當前模型：<span className="text-emerald-600 font-medium">{aiModel}</span>
@@ -2796,12 +2789,10 @@ function App() {
       let hints = [`你寫${work}時是什麼心情？`, `${work}最想表達什麼？`, '你最希望後人記住你什麼？']
 
       try {
-        const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        const res = await fetch('/api/chat', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${arkApiKey}`,
-          },
+            'Content-Type': 'application/json',          },
           body: JSON.stringify({
             model: aiModel,
             messages: [
@@ -2896,12 +2887,10 @@ function App() {
       }))
 
       try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        const response = await fetch('/api/chat', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${arkApiKey}`,
-          },
+            'Content-Type': 'application/json',          },
           body: JSON.stringify({
             model: aiModel,
             messages: [
@@ -2929,11 +2918,10 @@ function App() {
 
         // 根據 AI 回復動態生成新的快捷問題
         try {
-          const hintRes = await fetch('https://api.deepseek.com/v1/chat/completions', {
+          const hintRes = await fetch('/api/chat', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${arkApiKey}`,
             },
             body: JSON.stringify({
               model: aiModel,
@@ -3518,9 +3506,9 @@ function App() {
       let aiReply = '（時空信號不穩定，稍後再試）'
       if (!post.isUserPost) {
         try {
-          const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+          const res = await fetch('/api/chat', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${arkApiKey}` },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               model: aiModel,
               messages: [
@@ -3552,9 +3540,9 @@ function App() {
       let ancientText = postFormContent.trim()
 
       try {
-        const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        const res = await fetch('/api/chat', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${arkApiKey}` },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             model: aiModel,
             messages: [
@@ -3621,9 +3609,9 @@ function App() {
         setTimeout(async () => {
           let replyText = `${commenter.name}路過，深有同感。`
           try {
-            const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            const res = await fetch('/api/chat', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${arkApiKey}` },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 model: aiModel,
                 messages: [
@@ -4135,15 +4123,8 @@ function App() {
                   placeholder="如: deepseek-v4-flash"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">API Key</label>
-                <input
-                  type="password"
-                  value={keyInput}
-                  onChange={e => setKeyInput(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                  placeholder="ark-..."
-                />
+              <div className="text-xs text-gray-400 bg-gray-50 rounded-lg p-2">
+                API Key 由伺服器管理，無需手動輸入
               </div>
               <div className="text-xs text-gray-400 bg-gray-50 rounded-lg p-2">
                 當前模型：<span className="text-emerald-600 font-medium">{aiModel}</span>
