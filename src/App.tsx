@@ -7,6 +7,7 @@ interface BaseQuestion {
   id: number
   type: QuestionType
   tag: string
+  textId?: string  // 所屬經典文本ID
 }
 
 interface VocabQuestion extends BaseQuestion {
@@ -53,6 +54,34 @@ interface WordCardQuestion {
 }
 
 type Question = VocabQuestion | SentenceQuestion | ParseQuestion
+
+interface WrongbookEntry {
+  question: Question
+  addedAt: string
+}
+
+interface TextInfo {
+  id: string
+  title: string
+  author: string
+  dynasty: string
+  themes: string[]
+}
+
+const DSE_TEXTS: TextInfo[] = [
+  { id: 'lunyu', title: '論語八則', author: '孔子', dynasty: '先秦·春秋', themes: ['修身', '為學', '處世'] },
+  { id: 'yuwo', title: '魚我所欲也', author: '孟子', dynasty: '先秦·戰國', themes: ['義利之辨', '捨生取義'] },
+  { id: 'xiaoyao', title: '逍遙遊', author: '莊子', dynasty: '先秦·戰國', themes: ['逍遙', '無待', '大用'] },
+  { id: 'quanxue', title: '勸學', author: '荀子', dynasty: '先秦·戰國', themes: ['為學', '積累', '青出於藍'] },
+  { id: 'chushi', title: '出師表', author: '諸葛亮', dynasty: '三國·蜀漢', themes: ['忠誠', '託孤', '北伐'] },
+  { id: 'shishuo', title: '師說', author: '韓愈', dynasty: '唐朝', themes: ['從師', '傳道', '解惑'] },
+  { id: 'xishan', title: '始得西山宴遊記', author: '柳宗元', dynasty: '唐朝', themes: ['山水', '貶謫', '寄情'] },
+  { id: 'zuiweng', title: '醉翁亭記', author: '歐陽修', dynasty: '北宋', themes: ['山水', '飲酒', '與民同樂'] },
+  { id: 'yueyang', title: '岳陽樓記', author: '范仲淹', dynasty: '北宋', themes: ['憂樂', '天下', '抱負'] },
+  { id: 'liuguo', title: '六國論', author: '蘇洵', dynasty: '北宋', themes: ['史論', '賂秦', '存亡'] },
+  { id: 'lianpo', title: '廉頗藺相如列傳', author: '司馬遷', dynasty: '西漢', themes: ['將相', '負荊', '愛國'] },
+  { id: 'shengman', title: '聲聲慢·秋情', author: '李清照', dynasty: '南宋', themes: ['愁思', '孤寂', '詞'] },
+]
 
 type PastPaperQuestion = Question & {
   year: number
@@ -158,7 +187,7 @@ interface ChapterStructure {
   }>
 }
 
-type Page = 'home' | 'classic' | 'quiz' | 'result' | 'words' | 'words-learn' | 'words-fill' | 'words-quiz' | 'words-result' | 'grammar' | 'pastpaper' | 'wrongbook' | 'stats' | 'dialogue' | 'puzzle' | 'ancient-circle'
+type Page = 'home' | 'classic' | 'quiz' | 'result' | 'words' | 'words-learn' | 'words-fill' | 'words-quiz' | 'words-result' | 'grammar' | 'pastpaper' | 'pastpaper-result' | 'wrongbook' | 'stats' | 'dialogue' | 'puzzle' | 'ancient-circle'
 
 type ModuleCard = {
   id: Page
@@ -175,7 +204,7 @@ type ModuleCard = {
 // ===== 題庫 =====
 const questions: Question[] = [
   {
-    id: 1, type: 'vocab', tag: '詞義辨析',
+    id: 1, type: 'vocab', tag: '詞義辨析', textId: 'chushi',
     word: '崩殂', sentence: '先帝創業未半而中道崩殂',
     image: '/death.png',
     options: ['突然生病', '死亡（指皇帝）', '事業失敗', '離開家鄉'],
@@ -183,7 +212,7 @@ const questions: Question[] = [
     explanation: '「崩」指山倒塌，古代專指天子駕崩；「殂」指死亡。合稱為帝王之死。'
   },
   {
-    id: 2, type: 'vocab', tag: '詞義辨析',
+    id: 2, type: 'vocab', tag: '詞義辨析', textId: 'chushi',
     word: '開張', sentence: '誠宜開張聖聽',
     image: '/kaizhang.png',
     options: ['店鋪營業', '擴大（聖聽）', '開始做事', '張開嘴巴'],
@@ -191,7 +220,7 @@ const questions: Question[] = [
     explanation: '「開張」在此為古今異義詞，古義為「擴大、廣開」，今義為「商店開業」。'
   },
   {
-    id: 3, type: 'vocab', tag: '詞義辨析',
+    id: 3, type: 'vocab', tag: '詞義辨析', textId: 'chushi',
     word: '卑鄙', sentence: '先帝不以臣卑鄙',
     image: '/beibi.png',
     options: ['品德惡劣', '語言粗俗', '身份低微、見識短淺', '膽小怕事'],
@@ -199,7 +228,7 @@ const questions: Question[] = [
     explanation: '「卑鄙」為古今異義詞，古義指「出身低微、見識淺陋」，今義指「品行惡劣」。'
   },
   {
-    id: 4, type: 'vocab', tag: '詞義辨析',
+    id: 4, type: 'vocab', tag: '詞義辨析', textId: 'chushi',
     word: '斟酌', sentence: '至於斟酌損益，進盡忠言，則攸之、禕、允之任也',
     image: '/zhenzhuo.png',
     options: ['倒酒喝酒', '仔細考慮、權衡', '詢問他人', '隨意決定'],
@@ -207,7 +236,7 @@ const questions: Question[] = [
     explanation: '「斟酌」本義為倒酒，引申為「仔細考慮、權衡利弊」。此處諸葛亮將斟酌政務損益的責任託付給郭攸之、費禕、董允等人。'
   },
   {
-    id: 5, type: 'vocab', tag: '詞義辨析',
+    id: 5, type: 'vocab', tag: '詞義辨析', textId: 'chushi',
     word: '駑鈍', sentence: '庶竭駑鈍，攘除姦凶',
     image: '/nudum.png',
     options: ['馬跑得快', '才能低下、愚笨', '性格固執', '身體虛弱'],
@@ -215,7 +244,7 @@ const questions: Question[] = [
     explanation: '「駑」指劣馬，「鈍」指刀刃不鋒利。諸葛亮以「駑鈍」自謙，表示願竭盡自己平庸的才能，剷除奸邪兇惡之敵。'
   },
   {
-    id: 6, type: 'vocab', tag: '詞義辨析',
+    id: 6, type: 'vocab', tag: '詞義辨析', textId: 'chushi',
     word: '託付', sentence: '恐託付不效，以傷先帝之明',
     image: '/tuofu.png',
     options: ['隨便交代', '鄭重委託重任', '借錢給人', '寫信聯絡'],
@@ -223,7 +252,7 @@ const questions: Question[] = [
     explanation: '「託付」指劉備白帝城託孤，將蜀漢大業鄭重委託給諸葛亮。此句表達諸葛亮唯恐辜負先帝所託，體現了深沉的責任感。'
   },
   {
-    id: 7, type: 'sentence', tag: '特殊句式',
+    id: 7, type: 'sentence', tag: '特殊句式', textId: 'chushi',
     title: '判斷句式類型',
     originalSentence: '此誠危急存亡之秋也',
     question: '「此誠危急存亡之秋也」屬於哪種特殊句式？',
@@ -232,7 +261,7 @@ const questions: Question[] = [
     explanation: '句末用「也」字作判斷標誌，構成「……也」式判斷句。意為「這確實是危急存亡的關鍵時刻」。'
   },
   {
-    id: 8, type: 'sentence', tag: '特殊句式',
+    id: 8, type: 'sentence', tag: '特殊句式', textId: 'chushi',
     title: '判斷句式類型',
     originalSentence: '受任於敗軍之際，奉命於危難之間',
     question: '「受任於敗軍之際」中，「於」字引出的成分屬於什麼結構？',
@@ -241,7 +270,7 @@ const questions: Question[] = [
     explanation: '「於敗軍之際」是介詞結構，作狀語後置。正常語序應為「於敗軍之際受任」。'
   },
   {
-    id: 9, type: 'sentence', tag: '特殊句式',
+    id: 9, type: 'sentence', tag: '特殊句式', textId: 'chushi',
     title: '判斷句式類型',
     originalSentence: '先帝不以臣卑鄙，猥自枉屈，三顧臣於草廬之中',
     question: '「三顧臣於草廬之中」中，「於草廬之中」屬於哪種句式？',
@@ -250,7 +279,7 @@ const questions: Question[] = [
     explanation: '「於草廬之中」是介詞結構後置，作「顧」的狀語。即「在草廬之中三次拜訪我」。'
   },
   {
-    id: 10, type: 'parse', tag: '拆句理解',
+    id: 10, type: 'parse', tag: '拆句理解', textId: 'chushi',
     title: '句子成分分析',
     sentence: '先帝創業未半而中道崩殂',
     parts: [
@@ -266,7 +295,7 @@ const questions: Question[] = [
     explanation: '「而」在此錶轉折關係，強調先帝創業尚未完成，卻不幸中途去世，表達了遺憾與悲痛之情。'
   },
   {
-    id: 11, type: 'parse', tag: '拆句理解',
+    id: 11, type: 'parse', tag: '拆句理解', textId: 'chushi',
     title: '句子成分分析',
     sentence: '苟全性命於亂世，不求聞達於諸侯',
     parts: [
@@ -281,7 +310,1016 @@ const questions: Question[] = [
     correctAnswer: '在亂世中苟且保全性命',
     explanation: '「於亂世」是狀語後置，還原正常語序為「於亂世苟全性命」，即「在亂世中苟且保全性命」。'
   },
-]
+
+  // ==================== 論語八則 (lunyu) ====================
+  {
+    id: 12, type: 'vocab', tag: '詞義辨析', textId: 'lunyu',
+    word: '說', sentence: '學而時習之，不亦說乎',
+    image: '/words/yue.png',
+    options: ['說話、講話', '喜悅、高興', '解釋、說明', '勸說、遊說'],
+    correctAnswer: '喜悅、高興',
+    explanation: '「說」通「悅」，意為喜悅、高興。學習並且按時溫習，不也是很愉快的嗎？'
+  },
+  {
+    id: 13, type: 'vocab', tag: '詞義辨析', textId: 'lunyu',
+    word: '慍', sentence: '人不知而不慍，不亦君子乎',
+    image: '/words/yun.png',
+    options: ['生氣、怨恨', '傷心、難過', '害怕、膽怯', '驕傲、自滿'],
+    correctAnswer: '生氣、怨恨',
+    explanation: '「慍」意為怨恨、發怒。別人不知道自己的才能而不生氣，這不就是君子嗎？'
+  },
+  {
+    id: 14, type: 'vocab', tag: '詞義辨析', textId: 'lunyu',
+    word: '三省', sentence: '吾日三省吾身',
+    image: '/words/sanxing.png',
+    options: ['三次反省', '多次反省', '三次節省', '三個省份'],
+    correctAnswer: '多次反省',
+    explanation: '「三」在古文中常表示多次，非確數。「省」指反省、檢查。每天都多次反省自己。'
+  },
+  {
+    id: 15, type: 'vocab', tag: '詞義辨析', textId: 'lunyu',
+    word: '罔', sentence: '學而不思則罔，思而不學則殆',
+    image: '/words/wang.png',
+    options: ['迷惘、無所得', '網絡、連結', '欺騙、虛假', '忘記、遺忘'],
+    correctAnswer: '迷惘、無所得',
+    explanation: '「罔」意為迷惘、迷惑無所得。只學習不思考就會迷惘而無所獲。'
+  },
+  {
+    id: 16, type: 'sentence', tag: '特殊句式', textId: 'lunyu',
+    title: '判斷句式類型',
+    originalSentence: '不亦說乎？',
+    question: '「不亦說乎」屬於什麼句式？',
+    options: ['反問句', '判斷句', '被動句', '疑問句'],
+    correctAnswer: '反問句',
+    explanation: '「不亦……乎」是古代漢語固定反問句式，意為「不是很……嗎」。用反問語氣表達肯定。'
+  },
+  {
+    id: 17, type: 'sentence', tag: '特殊句式', textId: 'lunyu',
+    title: '判斷句式類型',
+    originalSentence: '學而時習之',
+    question: '「學而時習之」中的「而」表示什麼關係？',
+    options: ['轉折關係', '並列關係', '遞進關係', '因果關係'],
+    correctAnswer: '遞進關係',
+    explanation: '「而」連接「學」與「習」，表示遞進關係：學習了，並且按時溫習。'
+  },
+  {
+    id: 18, type: 'sentence', tag: '特殊句式', textId: 'lunyu',
+    title: '判斷句式類型',
+    originalSentence: '其為人也孝弟，而好犯上者，鮮矣',
+    question: '「鮮矣」中的「矣」在句中充當？',
+    options: ['語氣助詞（表肯定）', '介詞', '連詞', '動詞'],
+    correctAnswer: '語氣助詞（表肯定）',
+    explanation: '「矣」是句末語氣助詞，表示肯定的語氣，相當於現代漢語的「了」。'
+  },
+  {
+    id: 19, type: 'parse', tag: '拆句理解', textId: 'lunyu',
+    title: '句子成分分析',
+    sentence: '學而時習之，不亦說乎',
+    parts: [
+      { text: '學', label: '動詞（謂語）', color: 'bg-emerald-500' },
+      { text: '而', label: '連詞（遞進）', color: 'bg-amber-500' },
+      { text: '時', label: '狀語（按時）', color: 'bg-blue-500' },
+      { text: '習之', label: '謂語+賓語', color: 'bg-violet-500' },
+      { text: '不亦...乎', label: '反問框架', color: 'bg-rose-500' },
+    ],
+    question: '「時」在「學而時習之」中充當什麼成分？',
+    options: ['主語', '謂語', '狀語（按時）', '賓語'],
+    correctAnswer: '狀語（按時）',
+    explanation: '「時」在此是名詞作狀語，意為「按時」，修飾動詞「習」。名詞作狀語是古文常見用法。'
+  },
+  {
+    id: 20, type: 'parse', tag: '拆句理解', textId: 'lunyu',
+    title: '句子成分分析',
+    sentence: '己所不欲，勿施於人',
+    parts: [
+      { text: '己', label: '主語', color: 'bg-blue-500' },
+      { text: '所不欲', label: '所字結構（賓語）', color: 'bg-violet-500' },
+      { text: '勿施', label: '謂語', color: 'bg-rose-500' },
+      { text: '於人', label: '介詞結構（補語）', color: 'bg-amber-500' },
+    ],
+    question: '「己所不欲」中「所」字的作用是？',
+    options: ['表示處所', '與動詞構成所字結構（名詞性）', '表示原因', '表示被動'],
+    correctAnswer: '與動詞構成所字結構（名詞性）',
+    explanation: '「所+動詞」構成名詞性結構，表示「……的東西/事情」。「所不欲」即「不想要的東西」。'
+  },
+  // ==================== 魚我所欲也 (yuwo) ====================
+  {
+    id: 21, type: 'vocab', tag: '詞義辨析', textId: 'yuwo',
+    word: '欲', sentence: '魚，我所欲也；熊掌，亦我所欲也',
+    image: '/words/yu.png',
+    options: ['慾望、貪念', '想要、喜愛', '將要、快要', '需要、需求'],
+    correctAnswer: '想要、喜愛',
+    explanation: '「欲」意為想要、喜愛。魚是我想要的，熊掌也是我想要的。'
+  },
+  {
+    id: 22, type: 'vocab', tag: '詞義辨析', textId: 'yuwo',
+    word: '義', sentence: '二者不可得兼，舍魚而取熊掌者也',
+    image: '/words/yi.png',
+    options: ['意義、意思', '正義、道義', '情義、交情', '義務、責任'],
+    correctAnswer: '正義、道義',
+    explanation: '孟子以魚與熊掌作比，引出「捨生取義」的主題。「義」在此指道義、大義。'
+  },
+  {
+    id: 23, type: 'vocab', tag: '詞義辨析', textId: 'yuwo',
+    word: '兼', sentence: '二者不可得兼',
+    image: '/words/jian.png',
+    options: ['兼職、兼任', '同時擁有', '合併、統一', '兼顧、考慮'],
+    correctAnswer: '同時擁有',
+    explanation: '「兼」意為同時擁有兩種或以上的事物。「不可得兼」即不能同時得到兩者。'
+  },
+  {
+    id: 24, type: 'vocab', tag: '詞義辨析', textId: 'yuwo',
+    word: '苟得', sentence: '生亦我所欲，所欲有甚於生者，故不為苟得也',
+    image: '/words/goude.png',
+    options: ['隨便得到', '苟且偷生獲得', '如果得到', '暫時得到'],
+    correctAnswer: '苟且偷生獲得',
+    explanation: '「苟得」意為苟且獲得，即用不正當或不合道義的方式求得生存。'
+  },
+  {
+    id: 25, type: 'sentence', tag: '特殊句式', textId: 'yuwo',
+    title: '判斷句式類型',
+    originalSentence: '魚，我所欲也',
+    question: '「魚，我所欲也」屬於什麼句式？',
+    options: ['被動句', '判斷句', '倒裝句', '反問句'],
+    correctAnswer: '判斷句',
+    explanation: '「……也」是典型的判斷句式。意為「魚是我所想要的」。'
+  },
+  {
+    id: 26, type: 'sentence', tag: '特殊句式', textId: 'yuwo',
+    title: '判斷句式類型',
+    originalSentence: '所欲有甚於生者',
+    question: '「所欲有甚於生者」中「於」字的作用是？',
+    options: ['被動標誌', '引出比較對象', '引出處所', '引出原因'],
+    correctAnswer: '引出比較對象',
+    explanation: '「於」在此表示比較，意為「比」。即「所想要的東西有比生命更重要的」。'
+  },
+  {
+    id: 27, type: 'sentence', tag: '特殊句式', textId: 'yuwo',
+    title: '判斷句式類型',
+    originalSentence: '萬鍾則不辯禮義而受之',
+    question: '「則」在此表示什麼關係？',
+    options: ['轉折（卻）', '順承（就）', '假設（如果）', '並列（和）'],
+    correctAnswer: '轉折（卻）',
+    explanation: '「則」在此表示轉折，批評那些不分辨禮義就接受萬鍾俸祿的人。'
+  },
+  {
+    id: 28, type: 'parse', tag: '拆句理解', textId: 'yuwo',
+    title: '句子成分分析',
+    sentence: '生，亦我所欲也；義，亦我所欲也',
+    parts: [
+      { text: '生', label: '主語（話題）', color: 'bg-blue-500' },
+      { text: '亦', label: '副詞（也）', color: 'bg-gray-500' },
+      { text: '我所欲', label: '謂語（判斷）', color: 'bg-violet-500' },
+      { text: '也', label: '語氣助詞', color: 'bg-amber-500' },
+    ],
+    question: '「生，亦我所欲也」中「生」的語法功能是？',
+    options: ['動詞', '名詞（話題主語）', '形容詞', '副詞'],
+    correctAnswer: '名詞（話題主語）',
+    explanation: '「生」是話題化的主語，後面的「我所欲也」是謂語部分對其進行陳述判斷。'
+  },
+  {
+    id: 29, type: 'parse', tag: '拆句理解', textId: 'yuwo',
+    title: '句子成分分析',
+    sentence: '是故所欲有甚於生者，所惡有甚於死者',
+    parts: [
+      { text: '是故', label: '連詞（因此）', color: 'bg-amber-500' },
+      { text: '所欲', label: '所字結構（主語）', color: 'bg-blue-500' },
+      { text: '有甚於生者', label: '謂語+補語', color: 'bg-violet-500' },
+    ],
+    question: '「是故」在句中的意思是？',
+    options: ['這是因為', '因此、所以', '這個故事', '事情的緣故'],
+    correctAnswer: '因此、所以',
+    explanation: '「是故」是固定搭配，「是」指代前文，「故」意為緣故，合起來意為「因此」。'
+  },
+  // ==================== 逍遙遊 (xiaoyao) ====================
+  {
+    id: 30, type: 'vocab', tag: '詞義辨析', textId: 'xiaoyao',
+    word: '怒', sentence: '怒而飛，其翼若垂天之雲',
+    image: '/words/nu.png',
+    options: ['憤怒、生氣', '奮力、用力', '暴怒、狂怒', '激怒、觸怒'],
+    correctAnswer: '奮力、用力',
+    explanation: '「怒」在此為古今異義，古義為「奮力、用力」，描寫大鵬奮力飛起，非今義的「憤怒」。'
+  },
+  {
+    id: 31, type: 'vocab', tag: '詞義辨析', textId: 'xiaoyao',
+    word: '培', sentence: '故九萬里則風斯在下矣，而後乃今培風',
+    image: '/words/pei.png',
+    options: ['培養、教育', '憑藉、乘著', '加厚、堆積', '倍數、翻倍'],
+    correctAnswer: '憑藉、乘著',
+    explanation: '「培」通「憑」，意為憑藉。大鵬飛上九萬里高空後，憑藉著風勢飛行。'
+  },
+  {
+    id: 32, type: 'vocab', tag: '詞義辨析', textId: 'xiaoyao',
+    word: '天闕', sentence: '背負青天而莫之天闕者',
+    image: '/words/tianque.png',
+    options: ['天上的宮殿', '阻礙、阻擋', '天空的缺口', '折斷、夭折'],
+    correctAnswer: '阻礙、阻擋',
+    explanation: '「天闕」即阻礙、阻擋。大鵬背負青天飛行而沒有什麼能阻擋它。'
+  },
+  {
+    id: 33, type: 'vocab', tag: '詞義辨析', textId: 'xiaoyao',
+    word: '逍遙', sentence: '逍遙遊',
+    image: '/words/xiaoyao.png',
+    options: ['逃跑、逃離', '自由自在、無拘無束', '遊玩、旅行', '懶散、閒逛'],
+    correctAnswer: '自由自在、無拘無束',
+    explanation: '「逍遙」意指自由自在、無拘無束、悠然自得的境界，是莊子追求的精神自由。'
+  },
+  {
+    id: 34, type: 'sentence', tag: '特殊句式', textId: 'xiaoyao',
+    title: '判斷句式類型',
+    originalSentence: '鵬之背，不知其幾千里也',
+    question: '「也」在此句中的語法功能是？',
+    options: ['判斷語氣', '感嘆語氣', '疑問語氣', '陳述肯定語氣'],
+    correctAnswer: '陳述肯定語氣',
+    explanation: '「也」在此表陳述肯定語氣，加強「不知其幾千里」的肯定意味。'
+  },
+  {
+    id: 35, type: 'sentence', tag: '特殊句式', textId: 'xiaoyao',
+    title: '判斷句式類型',
+    originalSentence: '去以六月息者也',
+    question: '「去以六月息者也」屬於什麼特殊句式？',
+    options: ['賓語前置', '狀語後置', '定語後置', '被動句'],
+    correctAnswer: '狀語後置',
+    explanation: '「以六月息」是介詞結構作狀語後置，正常語序為「以六月息去」，即憑藉六月的大風離去。'
+  },
+  {
+    id: 36, type: 'sentence', tag: '特殊句式', textId: 'xiaoyao',
+    title: '判斷句式類型',
+    originalSentence: '之二蟲又何知',
+    question: '「之二蟲又何知」的句式特點是？',
+    options: ['判斷句', '賓語前置的反問句', '被動句', '省略句'],
+    correctAnswer: '賓語前置的反問句',
+    explanation: '「何知」即「知何」，疑問代詞「何」作賓語前置。整句為反問語氣：這兩隻小蟲又知道什麼呢？'
+  },
+  {
+    id: 37, type: 'parse', tag: '拆句理解', textId: 'xiaoyao',
+    title: '句子成分分析',
+    sentence: '鵬之徙於南冥也，水擊三千里',
+    parts: [
+      { text: '鵬之徙', label: '主語（取消獨立性）', color: 'bg-blue-500' },
+      { text: '於南冥', label: '介詞補語', color: 'bg-violet-500' },
+      { text: '也', label: '句中停頓', color: 'bg-gray-400' },
+      { text: '水擊', label: '謂語', color: 'bg-rose-500' },
+      { text: '三千里', label: '補語（距離）', color: 'bg-amber-500' },
+    ],
+    question: '「鵬之徙於南冥也」中「之」的作用是？',
+    options: ['結構助詞「的」', '取消句子獨立性（主謂間）', '代詞（它）', '動詞（去、往）'],
+    correctAnswer: '取消句子獨立性（主謂間）',
+    explanation: '「之」插入主謂之間，取消句子的獨立性，將「鵬徙」變成一個名詞性從句，作全句話題。'
+  },
+  {
+    id: 38, type: 'parse', tag: '拆句理解', textId: 'xiaoyao',
+    title: '句子成分分析',
+    sentence: '若夫乘天地之正，而御六氣之辯，以遊無窮者',
+    parts: [
+      { text: '若夫', label: '發語詞', color: 'bg-gray-400' },
+      { text: '乘天地之正', label: '謂語+賓語', color: 'bg-emerald-500' },
+      { text: '御六氣之辯', label: '謂語+賓語', color: 'bg-blue-500' },
+      { text: '以遊無窮者', label: '目的補語', color: 'bg-violet-500' },
+    ],
+    question: '「以遊無窮者」中的「以」意思是？',
+    options: ['因為', '用來、以便', '憑藉', '按照'],
+    correctAnswer: '用來、以便',
+    explanation: '「以」在此表示目的關係，連接前文的修養方式與後文的逍遙境界。即「乘天地之正……以便遊於無窮之境」。'
+  },
+  // ==================== 勸學 (quanxue) ====================
+  {
+    id: 39, type: 'vocab', tag: '詞義辨析', textId: 'quanxue',
+    word: '已', sentence: '學不可以已',
+    image: '/words/yi2.png',
+    options: ['已經、過去', '停止、終止', '而已、罷了', '自己、自身'],
+    correctAnswer: '停止、終止',
+    explanation: '「已」意為停止。「學不可以已」即學習不可以停止。'
+  },
+  {
+    id: 40, type: 'vocab', tag: '詞義辨析', textId: 'quanxue',
+    word: '青', sentence: '青，取之於藍，而青於藍',
+    image: '/words/qing.png',
+    options: ['青色染料', '藍色天空', '青春年華', '青菜蔬食'],
+    correctAnswer: '青色染料',
+    explanation: '「青」指青色染料，從藍草中提煉出來，但顏色比藍草更深。比喻學生可以超越老師。'
+  },
+  {
+    id: 41, type: 'vocab', tag: '詞義辨析', textId: 'quanxue',
+    word: '中繩', sentence: '木直中繩，輮以為輪',
+    image: '/words/zhongsheng.png',
+    options: ['中間的繩子', '符合墨線（標準）', '中國繩結', '綁住中間'],
+    correctAnswer: '符合墨線（標準）',
+    explanation: '「中繩」意為符合木匠的墨線標準。「中」讀去聲，意為符合。'
+  },
+  {
+    id: 42, type: 'vocab', tag: '詞義辨析', textId: 'quanxue',
+    word: '跬步', sentence: '故不積跬步，無以至千里',
+    image: '/words/kuibu.png',
+    options: ['大步飛躍', '半步', '快步奔跑', '跳舞步伐'],
+    correctAnswer: '半步',
+    explanation: '「跬」意為半步（跨出一腳）。「跬步」泛指極短的距離。不積累半步，就無法到達千里之外。'
+  },
+  {
+    id: 43, type: 'sentence', tag: '特殊句式', textId: 'quanxue',
+    title: '判斷句式類型',
+    originalSentence: '青，取之於藍，而青於藍',
+    question: '「取之於藍」中的「於」字用法是？',
+    options: ['被動標誌', '引出處所（從）', '引出比較對象（比）', '引出原因'],
+    correctAnswer: '引出處所（從）',
+    explanation: '「於」在此引出處所來源，即「從藍草中提取」。而第二個「於」則是引出比較對象。'
+  },
+  {
+    id: 44, type: 'sentence', tag: '特殊句式', textId: 'quanxue',
+    title: '判斷句式類型',
+    originalSentence: '冰，水為之，而寒於水',
+    question: '「寒於水」中的「於」表示？',
+    options: ['在（處所）', '比（比較）', '被（被動）', '由於（原因）'],
+    correctAnswer: '比（比較）',
+    explanation: '「於」在此表示比較，即「比水更寒冷」。冰由水結成，卻比水冷。'
+  },
+  {
+    id: 45, type: 'sentence', tag: '特殊句式', textId: 'quanxue',
+    title: '判斷句式類型',
+    originalSentence: '君子生非異也，善假於物也',
+    question: '「善假於物也」屬於什麼句式？',
+    options: ['被動句', '判斷句', '倒裝句', '反問句'],
+    correctAnswer: '判斷句',
+    explanation: '句末「也」標誌判斷句，意為「（君子）是善於借助外物的」。'
+  },
+  {
+    id: 46, type: 'parse', tag: '拆句理解', textId: 'quanxue',
+    title: '句子成分分析',
+    sentence: '故不積跬步，無以至千里',
+    parts: [
+      { text: '故', label: '連詞（所以）', color: 'bg-amber-500' },
+      { text: '不積跬步', label: '條件從句', color: 'bg-blue-500' },
+      { text: '無以', label: '固定結構（無法）', color: 'bg-violet-500' },
+      { text: '至千里', label: '謂語+賓語', color: 'bg-rose-500' },
+    ],
+    question: '「無以」這個固定結構的意思是？',
+    options: ['沒有用來……的辦法', '沒什麼', '無人能', '無所謂'],
+    correctAnswer: '沒有用來……的辦法',
+    explanation: '「無以」是固定結構，意為「沒有用來……的辦法」。「無以至千里」即沒有辦法到達千里之外。'
+  },
+  {
+    id: 47, type: 'parse', tag: '拆句理解', textId: 'quanxue',
+    title: '句子成分分析',
+    sentence: '鍥而不捨，金石可鏤',
+    parts: [
+      { text: '鍥', label: '動詞（雕刻）', color: 'bg-emerald-500' },
+      { text: '而不捨', label: '連詞+否定謂語', color: 'bg-amber-500' },
+      { text: '金石', label: '主語（受事）', color: 'bg-blue-500' },
+      { text: '可鏤', label: '謂語（被雕刻）', color: 'bg-violet-500' },
+    ],
+    question: '「金石可鏤」的語態是？',
+    options: ['主動語態', '被動語態（無標誌）', '使動用法', '意動用法'],
+    correctAnswer: '被動語態（無標誌）',
+    explanation: '「金石可鏤」是意念上的被動，意為「金石可以被雕刻」，沒有用「被」字等被動標誌。'
+  },
+  // ==================== 師說 (shishuo) ====================
+  {
+    id: 48, type: 'vocab', tag: '詞義辨析', textId: 'shishuo',
+    word: '師', sentence: '古之學者必有師',
+    image: '/words/shi.png',
+    options: ['軍隊、士兵', '老師、師傅', '模仿、效法', '法師、道士'],
+    correctAnswer: '老師、師傅',
+    explanation: '「師」在此即老師。古代求學的人一定有老師。韓愈開篇點明「從師」的主題。'
+  },
+  {
+    id: 49, type: 'vocab', tag: '詞義辨析', textId: 'shishuo',
+    word: '惑', sentence: '師者，所以傳道、受業、解惑也',
+    image: '/words/huo.png',
+    options: ['迷惑、疑惑', '或者、或許', '誘惑、迷惑人', '區域、範圍'],
+    correctAnswer: '迷惑、疑惑',
+    explanation: '「惑」指疑惑、不明白的地方。老師的職責之一就是解答學生的疑惑。'
+  },
+  {
+    id: 50, type: 'vocab', tag: '詞義辨析', textId: 'shishuo',
+    word: '恥', sentence: '今之眾人，其下聖人也亦遠矣，而恥學於師',
+    image: '/words/chi.png',
+    options: ['以……為恥辱', '羞恥、羞愧', '恥笑、嘲笑', '恥骨、部位'],
+    correctAnswer: '以……為恥辱',
+    explanation: '「恥」在此為意動用法，「以……為恥」。即以向老師學習為恥辱。'
+  },
+  {
+    id: 51, type: 'vocab', tag: '詞義辨析', textId: 'shishuo',
+    word: '不齒', sentence: '君子不齒',
+    image: '/words/buchi.png',
+    options: ['沒有牙齒', '不屑與之同列、鄙視', '不說話', '不記錄'],
+    correctAnswer: '不屑與之同列、鄙視',
+    explanation: '「不齒」意為不屑與之同列，即鄙視、瞧不起。齒在這裡是並列、同列的意思。'
+  },
+  {
+    id: 52, type: 'sentence', tag: '特殊句式', textId: 'shishuo',
+    title: '判斷句式類型',
+    originalSentence: '師者，所以傳道受業解惑也',
+    question: '「師者……也」屬於什麼句式？',
+    options: ['被動句', '判斷句', '反問句', '倒裝句'],
+    correctAnswer: '判斷句',
+    explanation: '「……者，……也」是典型的判斷句式，用於解釋說明「師」的職責。'
+  },
+  {
+    id: 53, type: 'sentence', tag: '特殊句式', textId: 'shishuo',
+    title: '判斷句式類型',
+    originalSentence: '句讀之不知，惑之不解',
+    question: '「句讀之不知」的句式特點是？',
+    options: ['判斷句', '賓語前置（用「之」復指）', '被動句', '狀語後置'],
+    correctAnswer: '賓語前置（用「之」復指）',
+    explanation: '正常語序為「不知句讀」，「之」作為賓語前置的標誌，將賓語「句讀」提到動詞「知」之前。'
+  },
+  {
+    id: 54, type: 'sentence', tag: '特殊句式', textId: 'shishuo',
+    title: '判斷句式類型',
+    originalSentence: '不拘於時',
+    question: '「不拘於時」中「於」的作用是？',
+    options: ['引出比較對象', '引出處所', '引出施事者（被動）', '引出原因'],
+    correctAnswer: '引出施事者（被動）',
+    explanation: '「於」在此表被動，引出施事者「時」。即「不被時俗所拘束」。'
+  },
+  {
+    id: 55, type: 'parse', tag: '拆句理解', textId: 'shishuo',
+    title: '句子成分分析',
+    sentence: '是故弟子不必不如師，師不必賢於弟子',
+    parts: [
+      { text: '是故', label: '連詞（因此）', color: 'bg-amber-500' },
+      { text: '弟子', label: '主語', color: 'bg-blue-500' },
+      { text: '不必不如', label: '雙重否定謂語', color: 'bg-violet-500' },
+      { text: '師', label: '賓語', color: 'bg-emerald-500' },
+      { text: '賢於弟子', label: '形容詞+比較補語', color: 'bg-rose-500' },
+    ],
+    question: '「賢於弟子」中的「於」意思是？',
+    options: ['從', '比', '在', '被'],
+    correctAnswer: '比',
+    explanation: '「於」在此表示比較，意為「比弟子更賢能」。'
+  },
+  {
+    id: 56, type: 'parse', tag: '拆句理解', textId: 'shishuo',
+    title: '句子成分分析',
+    sentence: '聞道有先後，術業有專攻',
+    parts: [
+      { text: '聞道', label: '主語（聽聞道理）', color: 'bg-blue-500' },
+      { text: '有先後', label: '謂語+賓語', color: 'bg-violet-500' },
+      { text: '術業', label: '主語（技藝學業）', color: 'bg-emerald-500' },
+      { text: '有專攻', label: '謂語+賓語', color: 'bg-rose-500' },
+    ],
+    question: '「聞道」在此句中的意思是？',
+    options: ['聽說道理', '懂得道理', '聽說路徑', '聞到氣味'],
+    correctAnswer: '懂得道理',
+    explanation: '「聞道」即聽聞/懂得道理。句意：每個人懂得道理的時間有先有後，技藝學業各有專門的研究方向。'
+  },
+  // ==================== 始得西山宴遊記 (xishan) ====================
+  {
+    id: 57, type: 'vocab', tag: '詞義辨析', textId: 'xishan',
+    word: '始', sentence: '始得西山宴遊記',
+    image: '/words/shi2.png',
+    options: ['開始、開端', '才、方才', '最初、起初', '始終、一直'],
+    correctAnswer: '才、方才',
+    explanation: '「始」在此意為「才」，表示經歷多次遊覽後才真正發現西山之美。一字道出柳宗元的欣喜。'
+  },
+  {
+    id: 58, type: 'vocab', tag: '詞義辨析', textId: 'xishan',
+    word: '惴慄', sentence: '自余為僇人，居是州，恆惴慄',
+    image: '/words/zhuili.png',
+    options: ['開心快樂', '憂懼不安', '憤怒激動', '平靜安逸'],
+    correctAnswer: '憂懼不安',
+    explanation: '「惴慄」意為憂慮恐懼、心神不安，反映了柳宗元被貶後的心理狀態。'
+  },
+  {
+    id: 59, type: 'vocab', tag: '詞義辨析', textId: 'xishan',
+    word: '斂', sentence: '其高下之勢，岈然窪然，若垤若穴，尺寸千里，攢蹙累積，莫得遯隱，縈青繚白，外與天際，四望如一，然後知是山之特立，不與培塿為類。悠悠乎與灝氣俱，而莫得其涯；洋洋乎與造物者遊，而不知其所窮。引觴滿酌，頹然就醉，不知日之入。蒼然暮色，自遠而至，至無所見，而猶不欲歸。心凝形釋，與萬化冥合。然後知吾嚮之未始遊，遊於是乎始。',
+    image: '/words/lian.png',
+    options: ['收起、收斂', '聚集、收攏', '剋制、約束', '結束、終結'],
+    correctAnswer: '收起、收斂',
+    explanation: '「斂」在此描述西山四周的地勢向中央聚攏收束的形態。'
+  },
+  {
+    id: 60, type: 'vocab', tag: '詞義辨析', textId: 'xishan',
+    word: '灝氣', sentence: '悠悠乎與灝氣俱，而莫得其涯',
+    image: '/words/haoqi.png',
+    options: ['污濁之氣', '浩然之氣、天地元氣', '寒氣、冷氣', '霧氣、氤氳'],
+    correctAnswer: '浩然之氣、天地元氣',
+    explanation: '「灝氣」即天地間的浩大之氣。柳宗元描寫西山之高，可以與天地元氣渾然一體。'
+  },
+  {
+    id: 61, type: 'sentence', tag: '特殊句式', textId: 'xishan',
+    title: '判斷句式類型',
+    originalSentence: '自余為僇人，居是州，恆惴慄',
+    question: '「自余為僇人」中「為」的作用是？',
+    options: ['表示被動', '表示判斷（是）', '表示目的（為了）', '表示原因（因為）'],
+    correctAnswer: '表示判斷（是）',
+    explanation: '「為」在此表判斷，意為「自從我成為（被貶的）罪人」。'
+  },
+  {
+    id: 62, type: 'sentence', tag: '特殊句式', textId: 'xishan',
+    title: '判斷句式類型',
+    originalSentence: '然後知是山之特立，不與培塿為類',
+    question: '「不與培塿為類」中「與」的詞性是？',
+    options: ['連詞（和）', '介詞（跟、同）', '語氣助詞', '動詞（給予）'],
+    correctAnswer: '介詞（跟、同）',
+    explanation: '「與」是介詞，引出比較對象。「不與培塿為類」即不跟小土丘同類。'
+  },
+  {
+    id: 63, type: 'sentence', tag: '特殊句式', textId: 'xishan',
+    title: '判斷句式類型',
+    originalSentence: '然後知吾嚮之未始遊，遊於是乎始',
+    question: '「遊於是乎始」中「於是」的用法是？',
+    options: ['因此、所以', '從這裡、從此', '在那裡', '對於這個'],
+    correctAnswer: '從這裡、從此',
+    explanation: '「於是」在此指「從此」，「於」是介詞（從），「是」是代詞（此）。從此才真正開始遊覽。'
+  },
+  {
+    id: 64, type: 'parse', tag: '拆句理解', textId: 'xishan',
+    title: '句子成分分析',
+    sentence: '心凝形釋，與萬化冥合',
+    parts: [
+      { text: '心凝', label: '主謂結構', color: 'bg-blue-500' },
+      { text: '形釋', label: '主謂結構', color: 'bg-violet-500' },
+      { text: '與萬化', label: '介詞結構', color: 'bg-amber-500' },
+      { text: '冥合', label: '謂語', color: 'bg-rose-500' },
+    ],
+    question: '「心凝形釋」中的修辭手法是？',
+    options: ['比喻', '誇張', '對偶', '擬人'],
+    correctAnswer: '對偶',
+    explanation: '「心凝」對「形釋」，兩兩相對，構成對偶。表達心神凝聚、形體消散的超然境界。'
+  },
+  {
+    id: 65, type: 'parse', tag: '拆句理解', textId: 'xishan',
+    title: '句子成分分析',
+    sentence: '然後知吾嚮之未始遊，遊於是乎始',
+    parts: [
+      { text: '然後', label: '連詞', color: 'bg-amber-500' },
+      { text: '知', label: '謂語', color: 'bg-rose-500' },
+      { text: '吾嚮之未始遊', label: '賓語從句', color: 'bg-blue-500' },
+      { text: '遊於是乎始', label: '結論分句', color: 'bg-violet-500' },
+    ],
+    question: '兩個「遊」字的不同含義分別是？',
+    options: ['前者泛指遊覽，後者指真正的精神遊歷', '前者和後者意思相同', '前者指旅遊，後者指遊戲', '前者指遊學，後者指遊玩'],
+    correctAnswer: '前者泛指遊覽，後者指真正的精神遊歷',
+    explanation: '柳宗元以兩個「遊」字作對比，之前只是普通的山水遊玩，從發現西山開始，才真正進入了精神層面的「遊」。'
+  },
+  // ==================== 醉翁亭記 (zuiweng) ====================
+  {
+    id: 66, type: 'vocab', tag: '詞義辨析', textId: 'zuiweng',
+    word: '環', sentence: '環滁皆山也',
+    image: '/words/huan.png',
+    options: ['環繞、圍繞', '環境、周圍', '圓環、戒指', '循環、週期'],
+    correctAnswer: '環繞、圍繞',
+    explanation: '「環」在此為動詞，意為環繞。滁州城的四周都被山環繞。'
+  },
+  {
+    id: 67, type: 'vocab', tag: '詞義辨析', textId: 'zuiweng',
+    word: '翼然', sentence: '有亭翼然臨於泉上者',
+    image: '/words/yiran.png',
+    options: ['像鳥展開翅膀一樣', '小心翼翼', '羽毛豐滿', '飛翔的樣子'],
+    correctAnswer: '像鳥展開翅膀一樣',
+    explanation: '「翼然」即像鳥兒展開翅膀的樣子，形容亭子的飛簷翹角，姿態輕盈。'
+  },
+  {
+    id: 68, type: 'vocab', tag: '詞義辨析', textId: 'zuiweng',
+    word: '寓', sentence: '山水之樂，得之心而寓之酒也',
+    image: '/words/yu2.png',
+    options: ['居住、住所', '寄託、寄寓', '公寓、房屋', '遇見、碰到'],
+    correctAnswer: '寄託、寄寓',
+    explanation: '「寓」意為寄託。山水的樂趣，領會在心中，寄託在飲酒上。'
+  },
+  {
+    id: 69, type: 'vocab', tag: '詞義辨析', textId: 'zuiweng',
+    word: '傴僂', sentence: '傴僂提攜，往來而不絕者',
+    image: '/words/yulv.png',
+    options: ['彎腰駝背（老人）', '站立筆直', '快走奔跑', '跳舞歡慶'],
+    correctAnswer: '彎腰駝背（老人）',
+    explanation: '「傴僂」指彎腰駝背的樣子，此處借代指老年人。與「提攜」（被攙扶的小孩）相對。'
+  },
+  {
+    id: 70, type: 'sentence', tag: '特殊句式', textId: 'zuiweng',
+    title: '判斷句式類型',
+    originalSentence: '環滁皆山也',
+    question: '「環滁皆山也」屬於什麼句式？',
+    options: ['被動句', '倒裝句', '判斷句', '省略句'],
+    correctAnswer: '判斷句',
+    explanation: '句末「也」為判斷句標誌。開篇第一句即用判斷句概寫滁州地理環境。'
+  },
+  {
+    id: 71, type: 'sentence', tag: '特殊句式', textId: 'zuiweng',
+    title: '判斷句式類型',
+    originalSentence: '醉翁之意不在酒，在乎山水之間也',
+    question: '「在乎山水之間也」中的「乎」相當於？',
+    options: ['疑問語氣詞', '介詞（於）', '感嘆詞', '動詞'],
+    correctAnswer: '介詞（於）',
+    explanation: '「乎」在此作介詞，相當於「於」，引出處所。「在乎」即「在於」。'
+  },
+  {
+    id: 72, type: 'sentence', tag: '特殊句式', textId: 'zuiweng',
+    title: '判斷句式類型',
+    originalSentence: '往來而不絕者，滁人遊也',
+    question: '「者……也」結構在此的作用是？',
+    options: ['被動句式', '判斷句式（解釋說明）', '疑問句式', '反問句式'],
+    correctAnswer: '判斷句式（解釋說明）',
+    explanation: '「……者，……也」是判斷句的典型格式，用來解釋說明「往來不絕的（人）是滁州人在遊玩」。'
+  },
+  {
+    id: 73, type: 'parse', tag: '拆句理解', textId: 'zuiweng',
+    title: '句子成分分析',
+    sentence: '醉翁之意不在酒，在乎山水之間也',
+    parts: [
+      { text: '醉翁之意', label: '主語', color: 'bg-blue-500' },
+      { text: '不在酒', label: '否定謂語', color: 'bg-rose-500' },
+      { text: '在乎', label: '謂語', color: 'bg-violet-500' },
+      { text: '山水之間', label: '賓語', color: 'bg-emerald-500' },
+      { text: '也', label: '判斷語氣', color: 'bg-gray-400' },
+    ],
+    question: '「不在酒」與「在乎山水之間」之間構成什麼關係？',
+    options: ['因果關係', '轉折對比關係', '並列關係', '遞進關係'],
+    correctAnswer: '轉折對比關係',
+    explanation: '先否定「在酒」，後肯定「在山水之間」，一否一肯構成轉折對比，突出醉翁真正的寄託所在。'
+  },
+  {
+    id: 74, type: 'parse', tag: '拆句理解', textId: 'zuiweng',
+    title: '句子成分分析',
+    sentence: '人知從太守遊而樂，而不知太守之樂其樂也',
+    parts: [
+      { text: '人知', label: '主語+謂語', color: 'bg-blue-500' },
+      { text: '從太守遊而樂', label: '賓語從句', color: 'bg-violet-500' },
+      { text: '而', label: '轉折連詞', color: 'bg-amber-500' },
+      { text: '不知', label: '否定謂語', color: 'bg-rose-500' },
+      { text: '太守之樂其樂', label: '賓語從句', color: 'bg-emerald-500' },
+    ],
+    question: '第一個「樂」與第二個「樂」的詞性和意思是？',
+    options: ['都是形容詞（快樂）', '第一個動詞（享受），第二個名詞（快樂）', '都是動詞', '都是名詞'],
+    correctAnswer: '第一個動詞（享受），第二個名詞（快樂）',
+    explanation: '「樂其樂」：第一個「樂」是動詞（以……為樂/享受），第二個「樂」是名詞（快樂）。即享受他們的快樂。'
+  },
+  // ==================== 岳陽樓記 (yueyang) ====================
+  {
+    id: 75, type: 'vocab', tag: '詞義辨析', textId: 'yueyang',
+    word: '屬', sentence: '屬予作文以記之',
+    image: '/words/zhu.png',
+    options: ['屬於、歸屬', '囑咐、叮囑', '家屬、親屬', '類屬、種類'],
+    correctAnswer: '囑咐、叮囑',
+    explanation: '「屬」通「囑」，意為囑咐、叮囑。滕子京囑咐范仲淹寫文章記述重修岳陽樓之事。'
+  },
+  {
+    id: 76, type: 'vocab', tag: '詞義辨析', textId: 'yueyang',
+    word: '謫', sentence: '慶曆四年春，滕子京謫守巴陵郡',
+    image: '/words/zhe.png',
+    options: ['升遷、提拔', '貶官、降職', '派遣、命令', '防守、守衛'],
+    correctAnswer: '貶官、降職',
+    explanation: '「謫」意為貶官、降職外放。「謫守」即被貶官後擔任某地的地方官。'
+  },
+  {
+    id: 77, type: 'vocab', tag: '詞義辨析', textId: 'yueyang',
+    word: '先', sentence: '先天下之憂而憂',
+    image: '/words/xian2.png',
+    options: ['前面、前方', '在……之前', '祖先、先輩', '優先、先行'],
+    correctAnswer: '在……之前',
+    explanation: '「先」在此為動詞，意為「在……之前」。即在天下人憂愁之前就憂愁。'
+  },
+  {
+    id: 78, type: 'vocab', tag: '詞義辨析', textId: 'yueyang',
+    word: '微', sentence: '微斯人，吾誰與歸',
+    image: '/words/wei2.png',
+    options: ['微小、細微', '沒有', '稍微、略微', '微妙、深奧'],
+    correctAnswer: '沒有',
+    explanation: '「微」在此意為「沒有」，表假設否定。即「如果沒有這樣的人，我與誰一道呢？」'
+  },
+  {
+    id: 79, type: 'sentence', tag: '特殊句式', textId: 'yueyang',
+    title: '判斷句式類型',
+    originalSentence: '此則岳陽樓之大觀也',
+    question: '「此則岳陽樓之大觀也」中「則」的作用是？',
+    options: ['轉折連詞', '順承連詞', '加強判斷語氣（就是）', '假設連詞'],
+    correctAnswer: '加強判斷語氣（就是）',
+    explanation: '「則」在此加強判斷語氣，相當於「就是」。與句末「也」配合，構成判斷句。'
+  },
+  {
+    id: 80, type: 'sentence', tag: '特殊句式', textId: 'yueyang',
+    title: '判斷句式類型',
+    originalSentence: '不以物喜，不以己悲',
+    question: '「不以物喜，不以己悲」中兩個「以」的意思是？',
+    options: ['用來', '因為', '憑藉', '按照'],
+    correctAnswer: '因為',
+    explanation: '「以」在此表原因，意為「因為」。不因為外物的好壞而喜悅或悲傷。'
+  },
+  {
+    id: 81, type: 'sentence', tag: '特殊句式', textId: 'yueyang',
+    title: '判斷句式類型',
+    originalSentence: '微斯人，吾誰與歸',
+    question: '「吾誰與歸」的句式特點是？',
+    options: ['賓語前置（疑問代詞）', '被動句', '判斷句', '狀語後置'],
+    correctAnswer: '賓語前置（疑問代詞）',
+    explanation: '正常語序為「吾與誰歸」，疑問代詞「誰」作賓語時需要前置到介詞「與」之前。'
+  },
+  {
+    id: 82, type: 'parse', tag: '拆句理解', textId: 'yueyang',
+    title: '句子成分分析',
+    sentence: '先天下之憂而憂，後天下之樂而樂',
+    parts: [
+      { text: '先', label: '謂語（在……之前）', color: 'bg-rose-500' },
+      { text: '天下之憂', label: '賓語', color: 'bg-blue-500' },
+      { text: '而', label: '連詞（才）', color: 'bg-amber-500' },
+      { text: '憂', label: '謂語', color: 'bg-violet-500' },
+    ],
+    question: '「先天下之忧而忧」的正确理解是？',
+    options: ['先擔憂天下再擔憂自己', '在天下人憂愁之前就憂愁', '天下人先憂愁自己後憂愁', '第一個憂愁天下的人'],
+    correctAnswer: '在天下人憂愁之前就憂愁',
+    explanation: '「先」作為動詞，帶賓語「天下之憂」，意為「把天下人的憂愁放在前面」，表現范仲淹心懷天下的抱負。'
+  },
+  {
+    id: 83, type: 'parse', tag: '拆句理解', textId: 'yueyang',
+    title: '句子成分分析',
+    sentence: '是進亦憂，退亦憂',
+    parts: [
+      { text: '是', label: '連詞（這樣）', color: 'bg-amber-500' },
+      { text: '進', label: '主語（入朝為官）', color: 'bg-blue-500' },
+      { text: '亦憂', label: '謂語', color: 'bg-rose-500' },
+      { text: '退', label: '主語（退居江湖）', color: 'bg-violet-500' },
+      { text: '亦憂', label: '謂語', color: 'bg-rose-500' },
+    ],
+    question: '「進」和「退」在此分別指什麼？',
+    options: ['前進和後退', '入朝為官和退居江湖', '進步和退步', '進攻和撤退'],
+    correctAnswer: '入朝為官和退居江湖',
+    explanation: '「進」指在朝廷做官（進取），「退」指退居江湖（退隱）。無論在朝在野都心懷天下。'
+  },
+  // ==================== 六國論 (liuguo) ====================
+  {
+    id: 84, type: 'vocab', tag: '詞義辨析', textId: 'liuguo',
+    word: '賂', sentence: '六國破滅，非兵不利，戰不善，弊在賂秦',
+    image: '/words/lu.png',
+    options: ['賄賂、用財物收買', '道路、路徑', '暴露、顯露', '搶劫、掠奪'],
+    correctAnswer: '賄賂、用財物收買',
+    explanation: '「賂」意為賄賂，即以割地、財物討好秦國。蘇洵認為六國滅亡的根本原因在於用土地賄賂秦國。'
+  },
+  {
+    id: 85, type: 'vocab', tag: '詞義辨析', textId: 'liuguo',
+    word: '率', sentence: '率賂秦耶',
+    image: '/words/shuai.png',
+    options: ['率領、帶領', '全都、一概', '比率、比例', '表率、模範'],
+    correctAnswer: '全都、一概',
+    explanation: '「率」在此為副詞，意為「全都」。反問句：難道全都是因為賄賂秦國嗎？'
+  },
+  {
+    id: 86, type: 'vocab', tag: '詞義辨析', textId: 'liuguo',
+    word: '故事', sentence: '苟以天下之大，而從六國破亡之故事',
+    image: '/words/gushi.png',
+    options: ['虛構的故事情節', '舊事、先例', '故意做某事', '典故、成語'],
+    correctAnswer: '舊事、先例',
+    explanation: '「故事」為古今異義詞，古義指「舊事、先例」，今義指「虛構的敘事作品」。'
+  },
+  {
+    id: 87, type: 'vocab', tag: '詞義辨析', textId: 'liuguo',
+    word: '厥', sentence: '思厥先祖父，暴霜露，斬荊棘，以有尺寸之地',
+    image: '/words/jue.png',
+    options: ['暈厥、昏倒', '其、他們的', '突出、突起', '斷絕、斷裂'],
+    correctAnswer: '其、他們的',
+    explanation: '「厥」為代詞，意為「其、他們的」。想想他們的先輩祖父，暴露在霜露之中，披荊斬棘。'
+  },
+  {
+    id: 88, type: 'sentence', tag: '特殊句式', textId: 'liuguo',
+    title: '判斷句式類型',
+    originalSentence: '六國破滅，非兵不利，戰不善，弊在賂秦',
+    question: '「非兵不利」中的「非」在語法上是？',
+    options: ['否定副詞（表示否定判斷）', '動詞', '形容詞', '連詞'],
+    correctAnswer: '否定副詞（表示否定判斷）',
+    explanation: '「非」用於否定判斷，相當於「不是」。先否定常見觀點（兵不利、戰不善），再引出真正原因。'
+  },
+  {
+    id: 89, type: 'sentence', tag: '特殊句式', textId: 'liuguo',
+    title: '判斷句式類型',
+    originalSentence: '為國者無使為積威之所劫哉',
+    question: '「為……之所……」是什麼句式？',
+    options: ['判斷句', '被動句', '反問句', '倒裝句'],
+    correctAnswer: '被動句',
+    explanation: '「為……之所……」是古漢語被動句式，相當於「被……所……」。即不要被秦國的積威所脅迫。'
+  },
+  {
+    id: 90, type: 'sentence', tag: '特殊句式', textId: 'liuguo',
+    title: '判斷句式類型',
+    originalSentence: '是又在六國下矣',
+    question: '「是」在此指代什麼？',
+    options: ['表示判斷（是）', '指代前文（這）', '正確、對的', '存在、有'],
+    correctAnswer: '指代前文（這）',
+    explanation: '「是」在此為指示代詞，指代前文所述的情況（賂秦行為），而非現代漢語的判斷動詞。'
+  },
+  {
+    id: 91, type: 'parse', tag: '拆句理解', textId: 'liuguo',
+    title: '句子成分分析',
+    sentence: '以地事秦，猶抱薪救火，薪不盡，火不滅',
+    parts: [
+      { text: '以地事秦', label: '主語從句', color: 'bg-blue-500' },
+      { text: '猶', label: '謂語（如同）', color: 'bg-rose-500' },
+      { text: '抱薪救火', label: '賓語（比喻）', color: 'bg-violet-500' },
+      { text: '薪不盡，火不滅', label: '補充說明', color: 'bg-amber-500' },
+    ],
+    question: '「抱薪救火」這個比喻說明了什麼道理？',
+    options: ['六國團結一致', '賂秦只會助長秦國野心，適得其反', '秦國愛好和平', '薪柴是重要資源'],
+    correctAnswer: '賂秦只會助長秦國野心，適得其反',
+    explanation: '抱著柴草去救火，柴不燒盡火就不會滅。比喻割地賂秦就像抱薪救火，不但不能保全國家，反而加速滅亡。'
+  },
+  {
+    id: 92, type: 'parse', tag: '拆句理解', textId: 'liuguo',
+    title: '句子成分分析',
+    sentence: '悲夫！有如此之勢，而為秦人積威之所劫',
+    parts: [
+      { text: '悲夫', label: '感嘆語', color: 'bg-gray-500' },
+      { text: '有如此之勢', label: '讓步從句', color: 'bg-blue-500' },
+      { text: '而', label: '轉折連詞', color: 'bg-amber-500' },
+      { text: '為秦人積威之所劫', label: '被動謂語', color: 'bg-rose-500' },
+    ],
+    question: '「悲夫」在文中的作用是？',
+    options: ['引出中心論點', '表達強烈感嘆與惋惜', '設置懸念', '總結全文'],
+    correctAnswer: '表達強烈感嘆與惋惜',
+    explanation: '「悲夫」是強烈的感嘆語，相當於「可悲啊！」。蘇洵在此表達對六國本有大好形勢卻被秦國所劫的深深惋惜。'
+  },
+  // ==================== 廉頗藺相如列傳 (lianpo) ====================
+  {
+    id: 93, type: 'vocab', tag: '詞義辨析', textId: 'lianpo',
+    word: '負荊', sentence: '廉頗聞之，肉袒負荊',
+    image: '/words/fujing.png',
+    options: ['背著荊條（請罪）', '負責治安', '背負責任', '拿著武器'],
+    correctAnswer: '背著荊條（請罪）',
+    explanation: '「負荊」即背著荊條上門請罪，是古代一種謝罪方式。表現廉頗知錯能改的勇氣。'
+  },
+  {
+    id: 94, type: 'vocab', tag: '詞義辨析', textId: 'lianpo',
+    word: '引', sentence: '引趙使者藺相如',
+    image: '/words/yin.png',
+    options: ['引導、帶領', '拉弓射箭', '引用、引用', '引起、導致'],
+    correctAnswer: '引導、帶領',
+    explanation: '「引」在此意為引導、延請。秦王在章臺接見並引見趙國使者藺相如。'
+  },
+  {
+    id: 95, type: 'vocab', tag: '詞義辨析', textId: 'lianpo',
+    word: '睨', sentence: '相如持其璧睨柱',
+    image: '/words/ni.png',
+    options: ['斜視、怒視', '近看、細看', '遠望、眺望', '俯視、向下看'],
+    correctAnswer: '斜視、怒視',
+    explanation: '「睨」意為斜著眼睛看，此處表現藺相如手持和氏璧、斜視柱子、準備撞柱的緊張場景。'
+  },
+  {
+    id: 96, type: 'vocab', tag: '詞義辨析', textId: 'lianpo',
+    word: '列', sentence: '而君位在廉頗之右，廉頗不忍為之下，宣言曰：「我見相如，必辱之。」相如聞，不肯與會。相如每朝時，常稱病，不欲與廉頗爭列。',
+    image: '/words/lie.png',
+    options: ['排列次序、位次', '陳列、展示', '一系列、眾多', '分裂、分開'],
+    correctAnswer: '排列次序、位次',
+    explanation: '「列」指朝廷上的排列位次。藺相如不願與廉頗爭奪位次高低，表現了以國家為重的胸懷。'
+  },
+  {
+    id: 97, type: 'sentence', tag: '特殊句式', textId: 'lianpo',
+    title: '判斷句式類型',
+    originalSentence: '相如者，趙人也',
+    question: '「相如者，趙人也」屬於什麼句式？',
+    options: ['判斷句', '被動句', '倒裝句', '省略句'],
+    correctAnswer: '判斷句',
+    explanation: '「……者，……也」是典型的判斷句式，用於介紹人物身份。意為「藺相如是趙國人」。'
+  },
+  {
+    id: 98, type: 'sentence', tag: '特殊句式', textId: 'lianpo',
+    title: '判斷句式類型',
+    originalSentence: '秦城恐不可得，徒見欺',
+    question: '「徒見欺」中「見」的用法是？',
+    options: ['看見、看到', '被動標誌（被）', '謁見、拜見', '見解、觀點'],
+    correctAnswer: '被動標誌（被）',
+    explanation: '「見」是被動標誌，「徒見欺」即「白白地被欺騙」。「見+動詞」構成被動句式。'
+  },
+  {
+    id: 99, type: 'sentence', tag: '特殊句式', textId: 'lianpo',
+    title: '判斷句式類型',
+    originalSentence: '以相如功大，拜為上卿',
+    question: '「拜為上卿」中省略了什麼成分？',
+    options: ['主語（趙王）', '賓語（相如）', '狀語', '補語'],
+    correctAnswer: '主語（趙王）',
+    explanation: '「拜為上卿」省略了主語「趙王」，完整應為「（趙王）拜（相如）為上卿」。古文常有主語省略。'
+  },
+  {
+    id: 100, type: 'parse', tag: '拆句理解', textId: 'lianpo',
+    title: '句子成分分析',
+    sentence: '臣所以去親戚而事君者，徒慕君之高義也',
+    parts: [
+      { text: '臣', label: '主語', color: 'bg-blue-500' },
+      { text: '所以……者', label: '固定結構（……的原因）', color: 'bg-amber-500' },
+      { text: '去親戚而事君', label: '謂語部分', color: 'bg-violet-500' },
+      { text: '徒慕君之高義也', label: '判斷謂語', color: 'bg-rose-500' },
+    ],
+    question: '「所以……者」這個結構的作用是？',
+    options: ['表示目的', '表示原因', '表示方式', '表示結果'],
+    correctAnswer: '表示原因',
+    explanation: '「所以……者」是固定結構，表示「……的原因」。整句：我們離開親人來侍奉您的原因，就是仰慕您的高尚道義。'
+  },
+  {
+    id: 101, type: 'parse', tag: '拆句理解', textId: 'lianpo',
+    title: '句子成分分析',
+    sentence: '強秦之所以不敢加兵於趙者，徒以吾兩人在也',
+    parts: [
+      { text: '強秦', label: '主語', color: 'bg-blue-500' },
+      { text: '所以……者', label: '原因結構', color: 'bg-amber-500' },
+      { text: '不敢加兵於趙', label: '謂語部分', color: 'bg-violet-500' },
+      { text: '徒以吾兩人在也', label: '原因補語', color: 'bg-rose-500' },
+    ],
+    question: '「徒以吾兩人在也」中「以」的意思是？',
+    options: ['用來', '因為', '憑藉', '按照'],
+    correctAnswer: '因為',
+    explanation: '「以」在此表原因，意為「因為」。強大的秦國不敢對趙國用兵，只是因為我們兩人在啊。'
+  },
+  // ==================== 聲聲慢·秋情 (shengman) ====================
+  {
+    id: 102, type: 'vocab', tag: '詞義辨析', textId: 'shengman',
+    word: '尋尋覓覓', sentence: '尋尋覓覓，冷冷清清，淒淒慘慘戚戚',
+    image: '/words/xunmi.png',
+    options: ['到處尋找（失落之物）', '尋找寶藏', '尋找朋友', '尋找食物'],
+    correctAnswer: '到處尋找（失落之物）',
+    explanation: '「尋尋覓覓」以疊字開篇，描寫作者茫然若失、四處尋覓的狀態。尋的是往昔的美好生活與已故的丈夫。'
+  },
+  {
+    id: 103, type: 'vocab', tag: '詞義辨析', textId: 'shengman',
+    word: '將息', sentence: '乍暖還寒時候，最難將息',
+    image: '/words/jiangxi.png',
+    options: ['將要休息', '調養、保養', '睡眠休息', '停止呼吸'],
+    correctAnswer: '調養、保養',
+    explanation: '「將息」意為調養、休息保養身體。天氣忽暖忽寒的時候，最難調養身體。'
+  },
+  {
+    id: 104, type: 'vocab', tag: '詞義辨析', textId: 'shengman',
+    word: '怎生', sentence: '獨自怎生得黑',
+    image: '/words/zensheng.png',
+    options: ['怎樣生活', '怎麼、如何', '為什麼', '多麼'],
+    correctAnswer: '怎麼、如何',
+    explanation: '「怎生」是宋詞口語，意為「怎麼、如何」。獨自一人，怎麼熬到天黑？'
+  },
+  {
+    id: 105, type: 'vocab', tag: '詞義辨析', textId: 'shengman',
+    word: '了得', sentence: '這次第，怎一個愁字了得',
+    image: '/words/liaode.png',
+    options: ['了結、完結', '概括得了', '了不起', '不得了'],
+    correctAnswer: '概括得了',
+    explanation: '「了得」意為「概括得了」。這種種情景，一個「愁」字怎麼能概括得了呢？'
+  },
+  {
+    id: 106, type: 'sentence', tag: '特殊句式', textId: 'shengman',
+    title: '判斷句式類型',
+    originalSentence: '這次第，怎一個愁字了得',
+    question: '「怎一個愁字了得」是什麼句式？',
+    options: ['判斷句', '反問句', '被動句', '倒裝句'],
+    correctAnswer: '反問句',
+    explanation: '「怎……了得」是反問句式，意為「怎麼能……呢」。以反問收結全詞，強化了愁緒無盡的主題。'
+  },
+  {
+    id: 107, type: 'sentence', tag: '特殊句式', textId: 'shengman',
+    title: '判斷句式類型',
+    originalSentence: '梧桐更兼細雨，到黃昏、點點滴滴',
+    question: '「更兼」的詞語結構是？',
+    options: ['副詞+動詞', '連詞+動詞', '副詞+連詞', '動詞+名詞'],
+    correctAnswer: '副詞+動詞',
+    explanation: '「更」（副詞，更加上/又）修飾「兼」（動詞，加上）。梧桐葉落本就淒涼，更加上細雨綿綿。'
+  },
+  {
+    id: 108, type: 'sentence', tag: '特殊句式', textId: 'shengman',
+    title: '判斷句式類型',
+    originalSentence: '滿地黃花堆積，憔悴損',
+    question: '「憔悴損」中「損」的意思是？',
+    options: ['損壞、破壞', '極、很（程度補語）', '損失、虧損', '損害、傷害'],
+    correctAnswer: '極、很（程度補語）',
+    explanation: '「損」在此為程度補語，相當於「極、很」，用以加深「憔悴」的程度。菊花凋零，人也憔悴到了極點。'
+  },
+  {
+    id: 109, type: 'parse', tag: '拆句理解', textId: 'shengman',
+    title: '句子成分分析',
+    sentence: '尋尋覓覓，冷冷清清，淒淒慘慘戚戚',
+    parts: [
+      { text: '尋尋覓覓', label: '動作疊詞（動詞）', color: 'bg-blue-500' },
+      { text: '冷冷清清', label: '環境疊詞（形容詞）', color: 'bg-violet-500' },
+      { text: '淒淒慘慘戚戚', label: '心情疊詞（形容詞）', color: 'bg-rose-500' },
+    ],
+    question: '開篇七組疊字的作用是什麼？',
+    options: ['單純修辭技巧炫耀', '由外而內層層遞進，渲染孤寂愁苦之深', '描寫春天景色', '記錄日常生活'],
+    correctAnswer: '由外而內層層遞進，渲染孤寂愁苦之深',
+    explanation: '七組疊字從動作（尋覓）到環境（冷清）再到心境（淒戚），三層遞進，開創了宋詞中以疊字寫愁的典範。'
+  },
+  {
+    id: 110, type: 'parse', tag: '拆句理解', textId: 'shengman',
+    title: '句子成分分析',
+    sentence: '守著窗兒，獨自怎生得黑',
+    parts: [
+      { text: '守著窗兒', label: '狀語（場景描寫）', color: 'bg-blue-500' },
+      { text: '獨自', label: '狀語（孤獨）', color: 'bg-violet-500' },
+      { text: '怎生得黑', label: '反問謂語', color: 'bg-rose-500' },
+    ],
+    question: '「守著窗兒」這句營造了怎樣的意境？',
+    options: ['歡快愉悅的氣氛', '孤獨無聊、度日如年的意境', '忙碌充實的生活場景', '豪邁奔放的氣勢'],
+    correctAnswer: '孤獨無聊、度日如年的意境',
+    explanation: '「守著窗兒」描繪作者獨坐窗前、無所事事的情景，表現了孤獨無聊、難以打發時間的愁苦心境。'
+  },
+  // ==================== 出師表 (chushi) 補充 parse 題 ====================
+  {
+    id: 111, type: 'parse', tag: '拆句理解', textId: 'chushi',
+    title: '句子成分分析',
+    sentence: '親賢臣，遠小人，此先漢所以興隆也',
+    parts: [
+      { text: '親賢臣', label: '謂語+賓語', color: 'bg-emerald-500' },
+      { text: '遠小人', label: '謂語+賓語', color: 'bg-rose-500' },
+      { text: '此', label: '主語（指代前文）', color: 'bg-blue-500' },
+      { text: '先漢所以興隆也', label: '判斷謂語', color: 'bg-violet-500' },
+    ],
+    question: '「此先漢所以興隆也」中「所以」的意思是？',
+    options: ['因此、所以', '……的原因', '用來……的方法', '所有的'],
+    correctAnswer: '……的原因',
+    explanation: '「所以」在此表示「……的原因」。親近賢臣、遠離小人，這就是前漢興隆的原因。'
+  }]
 
 const grammarQuestions: SentenceQuestion[] = [
   {
@@ -697,8 +1735,239 @@ const wordCards: WordCardQuestion[] = [
       '古代「交通」不是現在的交通工具之意，而是「交錯相通」「互相聯繫」。在《桃花源記》中，指田間小路相互交錯貫通。這類詞在古文中的含義和現代意思差異巨大，很容易造成理解混亂。',
     memoryTip:
       '古文的「交通」在地理/田地描寫中多出現，指「路相交、相通」。',
-  },
-]
+    },
+{
+      id: 16,
+      category: '一詞多義 · 之',
+      word: '之',
+      sentence: '予獨愛蓮之出淤泥而不染。',
+      image: '/words/zhi.png',
+      options: ['助詞「的」', '代詞「它/他」', '動詞「去、往」', '無意義音節'],
+      correctAnswer: ['助詞「的」', '的'],
+      explanation: '「之」是文言文中出現頻率最高的虛詞之一。在這裡「蓮之出淤泥」的「之」是結構助詞，用於主謂之間取消句子獨立性，相當於現代的「的」。同一個「之」在不同句子裡可能是代詞（代替人或事物）或動詞（去、往），必須結合上下文判斷。',
+      memoryTip: '「主語+之+謂語」結構中，「之」多為取消句子獨立性的助詞。',
+    },
+    {
+      id: 17,
+      category: '一詞多義 · 之',
+      word: '之',
+      sentence: '輟耕之壟上，悵恨久之。',
+      image: '/words/zhi2.png',
+      options: ['助詞「的」', '代詞「它/他」', '動詞「去、往」', '音節助詞'],
+      correctAnswer: ['動詞「去、往」', '去', '往', '前往', '到'],
+      explanation: '「之壟上」的「之」是動詞，意思是「去、往、到」。而「久之」的「之」是音節助詞，無實義，只起湊足音節的作用。同一個「之」在同一句話裡可能出現不同的用法，這是文言文學習的難點。',
+      memoryTip: '「之+地點名詞」結構中，「之」常為動詞「去、往」。',
+    },
+    {
+      id: 18,
+      category: '一詞多義 · 其',
+      word: '其',
+      sentence: '既出，得其船，便扶向路。',
+      image: '/words/qi.png',
+      options: ['代詞「他的」', '語氣副詞「大概」', '語氣副詞「難道」', '指示代詞「那個」'],
+      correctAnswer: ['代詞「他的」', '他的', '自己的', '他的那'],
+      explanation: '「其」在文言文中極常見，可作代詞（他的、它的）、指示詞（那個）、語氣詞（大概、難道）。這裡「得其船」就是「找到了他的船」，「其」代指漁人。判斷「其」的含義要看它在句中的位置和指代關係。',
+      memoryTip: '「其+名詞」=「某人/某物的……」，最常見的是代詞用法。',
+    },
+    {
+      id: 19,
+      category: '一詞多義 · 而',
+      word: '而',
+      sentence: '人不知而不慍，不亦君子乎？',
+      image: '/words/er.png',
+      options: ['並列「而且」', '轉折「卻」', '承接「然後」', '修飾「地」'],
+      correctAnswer: ['轉折「卻」', '卻', '但是', '可是'],
+      explanation: '「而」是文言文中最靈活的連詞。這裡前後是轉折關係——「別人不了解自己，卻不生氣」。同一個「而」還可表並列（且）、承接（就）、修飾（地）。判斷關鍵是看前後分句的邏輯關係。',
+      memoryTip: '先看前後分句的關係：相反→轉折「卻」；相承→承接「就」；並存→並列「而且」。',
+    },
+    {
+      id: 20,
+      category: '一詞多義 · 於',
+      word: '於',
+      sentence: '青，取之於藍，而青於藍。',
+      image: '/words/yu.png',
+      options: ['介詞「在」', '介詞「從」', '介詞「比」', '介詞「被」'],
+      correctAnswer: ['介詞「從」', '介詞「比」', '從', '比', '從……中', '比……更'],
+      explanation: '這句話裡兩個「於」意思不同！「取之於藍」的「於」是「從」（從藍草中提取）；「青於藍」的「於」是「比」（比藍草更青）。同一句中「於」的兩個常見用法同時出現，是很好的辨析例子。',
+      memoryTip: '「動詞+於+地點/來源」→「在/從」；「形容詞+於+對象」→「比」。',
+    },
+    {
+      id: 21,
+      category: '一詞多義 · 為',
+      word: '為',
+      sentence: '茅屋為秋風所破歌。',
+      image: '/words/wei.png',
+      options: ['動詞「做」', '介詞「替、給」', '介詞「被」', '動詞「是」'],
+      correctAnswer: ['介詞「被」', '被', '被……所'],
+      explanation: '「為……所」是文言文被動句的典型結構。「為秋風所破」就是「被秋風吹破」。同一個「為」在別的句子裡可能是動詞「做」（為之）、介詞「替」（為民請命）、動詞「是」（此為何物）。結構決定含義。',
+      memoryTip: '「為+名詞+所+動詞」=被動句式，記住這個固定搭配。',
+    },
+    {
+      id: 22,
+      category: '一詞多義 · 乃',
+      word: '乃',
+      sentence: '乃不知有漢，無論魏晉。',
+      image: '/words/nai.png',
+      options: ['副詞「於是、就」', '副詞「竟然」', '判斷詞「是」', '副詞「才」'],
+      correctAnswer: ['副詞「竟然」', '竟然', '居然', '竟'],
+      explanation: '「乃」在這裡表示出乎意料——桃花源中的人「竟然不知道有漢朝」。語氣比單純的「就」強烈得多。同一個「乃」在「乃重修岳陽樓」中是承接（就），在「此乃岳陽樓」中是判斷（是）。',
+      memoryTip: '「乃+否定（不/無）」→常表意外語氣「竟然」。',
+    },
+    {
+      id: 23,
+      category: '一詞多義 · 則',
+      word: '則',
+      sentence: '學而不思則罔，思而不學則殆。',
+      image: '/words/ze.png',
+      options: ['連詞「就」', '連詞「卻」', '名詞「法則」', '副詞「才」'],
+      correctAnswer: ['連詞「就」', '就', '便', '那麼就', '就會'],
+      explanation: '「則」在這裡表因果承接——「只學不思，就會迷惘；只思不學，就會危險」。前後是條件-結果關係。「則」還可表轉折（卻），如「今則不然」=「現在卻不是這樣」。判斷依據是前後分句的關係。',
+      memoryTip: '「條件+則+結果」是最常見的用法，記住「前因後果用則」。',
+    },
+    {
+      id: 24,
+      category: '古今異義 · 走',
+      word: '走',
+      sentence: '兔走觸株，折頸而死。',
+      image: '/words/zou.png',
+      options: ['行走、走路', '跑、奔跑', '離開、離去', '移動'],
+      correctAnswer: ['跑、奔跑', '跑', '奔跑', '快跑', '飛跑'],
+      explanation: '這是典型的古今異義！「走」在古代是「跑、奔跑」的意思，不是現代的「行走」。「兔走觸株」是「兔子跑得太快撞到樹樁上」——如果只是慢走，不可能「折頸而死」。古文中的「行」才是現代的「走」。',
+      memoryTip: '古文「走」= 跑，「行」= 走。記住「走馬看花」= 騎著奔跑的馬看花，不是「走路的馬」。',
+    },
+    {
+      id: 25,
+      category: '古今異義 · 去',
+      word: '去',
+      sentence: '與人期行，相委而去。',
+      image: '/words/qu.png',
+      options: ['前往、去到', '離開、離去', '去除、去掉', '距離'],
+      correctAnswer: ['離開、離去', '離開', '離去', '走開', '棄去'],
+      explanation: '古文中的「去」是「離開」，不是現代的「前往」。「相委而去」就是「丟下他離開了」。現代說「去北京」是前往，古文說「去齊」是離開齊國。方向完全相反！這是古今異義中最容易出錯的詞之一。',
+      memoryTip: '古文「去」=離開（從原處走開），與現代「去」的方向相反。',
+    },
+    {
+      id: 26,
+      category: '古今異義 · 或',
+      word: '或',
+      sentence: '或以為死，或以為亡。',
+      image: '/words/huo.png',
+      options: ['或者、或許', '有人、有的人', '有時、偶爾', '也許'],
+      correctAnswer: ['有人、有的人', '有人', '有的人', '有些人', '一些人'],
+      explanation: '古文「或」常作不定代詞，意思是「有人、有的人」，不是現代的連詞「或者」。「或以為死，或以為亡」=「有人認為他死了，有人認為他逃了」。現代漢語中「或」的連接詞用法是後起義。',
+      memoryTip: '看到句首「或+動詞」先判斷是不是「有人做了某事」，不要默認成「或者」。',
+    },
+    {
+      id: 27,
+      category: '古今異義 · 再',
+      word: '再',
+      sentence: '一鼓作氣，再而衰，三而竭。',
+      image: '/words/zai.png',
+      options: ['又一次、再次', '兩次、第二次', '多次、反覆', '然後'],
+      correctAnswer: ['兩次、第二次', '兩次', '第二次', '二', '第二回'],
+      explanation: '古文「再」是確數「兩次、第二次」，不是現代泛指的「又一次」。「一鼓、再鼓、三鼓」就是第一次、第二次、第三次擊鼓。現代「再見」的「再」是「又一次」——古今差異很大。',
+      memoryTip: '「一……再……三……」結構中，「再」=第二次，不是再次。與「再三請求」的「再」不同。',
+    },
+    {
+      id: 28,
+      category: '古今異義 · 犧牲',
+      word: '犧牲',
+      sentence: '犧牲玉帛，弗敢加也。',
+      image: '/words/xisheng.png',
+      options: ['為正義獻身', '祭祀用的牲畜', '放棄的利益', '受難者'],
+      correctAnswer: ['祭祀用的牲畜', '祭祀牲畜', '祭品', '祭祀用的牛羊', '祭牲'],
+      explanation: '「犧牲」古代指祭祀用的純色牲畜（牛、羊、豬等），是中性的祭祀名詞。現代意義「為正義事業獻出生命」是後起的引申義。在文言文閱讀中看到「犧牲」，不能理解為現代意義上的「犧牲者」。',
+      memoryTip: '「犧牲」+「玉帛」並列時，必指祭祀物品。古代「犧」=純色祭牛，「牲」=祭牲統稱。',
+    },
+    {
+      id: 29,
+      category: '古今異義 · 故事',
+      word: '故事',
+      sentence: '苟以天下之大，而從六國破亡之故事。',
+      image: '/words/gushi.png',
+      options: ['敘述性文學作品', '舊事、先例、前例', '故意的事', '虛構情節'],
+      correctAnswer: ['舊事、先例、前例', '舊事', '先例', '前例', '舊例', '往事'],
+      explanation: '古文中的「故事」指「過去的事、舊例、先例」，不是現代的文學體裁。「六國破亡之故事」=「六國滅亡的前例」。千萬不要理解成「六國滅亡的故事書」！語境完全不同。',
+      memoryTip: '「……之故事」前面有歷史事件時，「故事」= 舊事/先例，不是講故事。',
+    },
+    {
+      id: 30,
+      category: '通假字 · 說 → 悅',
+      word: '說',
+      sentence: '學而時習之，不亦說乎？',
+      image: '/words/yue.png',
+      options: ['說話、講述', '高興、愉悅（通「悅」）', '學說、主張', '解釋、說明'],
+      correctAnswer: ['高興、愉悅（通「悅」）', '高興', '愉悅', '喜悅', '快樂', '愉快'],
+      explanation: '「說」在這裡是通假字，同「悅」，意思是「高興、愉快」。「不亦說乎」就是「不也很愉快嗎」，不是「不也可以說說嗎」。這是《論語》開篇第一句裡的經典通假字，考試極常出。',
+      memoryTip: '「不亦說乎」中的「說」=「悅」。「說」通「悅」多在表達情緒的語境中出現。',
+    },
+    {
+      id: 31,
+      category: '通假字 · 見 → 現',
+      word: '見',
+      sentence: '風吹草低見牛羊。',
+      image: '/words/xian.png',
+      options: ['看見、看到', '顯現、出現（通「現」）', '會被', '拜見'],
+      correctAnswer: ['顯現、出現（通「現」）', '顯現', '出現', '露出', '呈現', '現出'],
+      explanation: '「見」在這裡通「現」，意思是「顯現、露出來」。草被風吹低之後，牛羊就顯現出來了。如果理解成「看見牛羊」，意思也通但韻味不同——原意是牛羊自己「現身」，不是人「看見」。',
+      memoryTip: '「見」在句末或表示「某物顯露」時，常通「現」。記「風吹草低見牛羊」。',
+    },
+    {
+      id: 32,
+      category: '通假字 · 被 → 披',
+      word: '被',
+      sentence: '將軍身被堅執銳。',
+      image: '/words/bei2.png',
+      options: ['遭受、蒙受', '穿、披（通「披」）', '表被動', '覆蓋'],
+      correctAnswer: ['穿、披（通「披」）', '穿', '披', '披上', '身穿', '披掛'],
+      explanation: '「被」在這裡通「披」，意思是「穿、披掛」。將軍身披堅固的鎧甲、手持銳利的武器。注意這裡不是被動語態！通假字的判斷關鍵是看前後文的邏輯——「被堅執銳」如果不通假，語意就不通了。',
+      memoryTip: '「被+衣物/裝備」組合時，常通「披」。如「被甲」、「被堅執銳」。',
+    },
+    {
+      id: 33,
+      category: '通假字 · 反 → 返',
+      word: '反',
+      sentence: '寒暑易節，始一反焉。',
+      image: '/words/fan.png',
+      options: ['反對、相反', '返回、回去（通「返」）', '反省、反思', '造反'],
+      correctAnswer: ['返回、回去（通「返」）', '返回', '回去', '歸返', '歸來'],
+      explanation: '「反」在這裡通「返」，意思是「返回、歸來」。「始一反焉」就是「才回來一次」。如果把「反」理解成「反對」，整句話就講不通了。「反」通「返」是極常見的通假關係。',
+      memoryTip: '「反」在表示移動/歸來的語境中，常通「返」。記「撥亂反正」中的「反」也是「返」。',
+    },
+    {
+      id: 34,
+      category: '詞類活用 · 名詞作動詞',
+      word: '鞭',
+      sentence: '驢不勝怒，蹄之。',
+      image: '/words/mingdong.png',
+      options: ['蹄子（名詞）', '用蹄子踢（名詞作動詞）', '走路', '踐踏'],
+      correctAnswer: ['用蹄子踢（名詞作動詞）', '用蹄子踢', '踢', '蹄踢', '以蹄踢之'],
+      explanation: '「蹄」本來是名詞（驢的蹄子），但在這裡臨時活用為動詞——「用蹄子踢」。這就是「名詞作動詞」的典型例子。文言文中名詞在謂語位置且後面帶賓語時，常活用為動詞。',
+      memoryTip: '「名詞+之/賓語」的結構中，如果名詞不是主語，很可能活用作動詞。',
+    },
+    {
+      id: 35,
+      category: '詞類活用 · 形容詞作名詞',
+      word: '美',
+      sentence: '吾妻之美我者，私我也。',
+      image: '/words/xingming.png',
+      options: ['美麗的（形容詞）', '認為我美（意動用法）', '美麗（形容詞作名詞）', '稱讚'],
+      correctAnswer: ['認為我美（意動用法）', '認為我美', '以我為美', '覺得我美'],
+      explanation: '「美」本來是形容詞，但「美我」是「認為我美、以我為美」。這是「意動用法」——主語主觀上認為賓語具有某種性質。形容詞帶賓語時，往往是意動用法，表示「認為……怎麼樣」。',
+      memoryTip: '「形容詞+賓語」結構中，形容詞可能活用作意動：主觀上「認為賓語具有該性質」。',
+    },
+    {
+      id: 36,
+      category: '詞類活用 · 使動用法',
+      word: '安',
+      sentence: '既來之，則安之。',
+      image: '/words/shidong.png',
+      options: ['安全的（形容詞）', '使……安定（使動用法）', '安心', '安居'],
+      correctAnswer: ['使……安定（使動用法）', '使……安定', '使之安', '讓其安定', '使其安心'],
+      explanation: '「安之」不是「對他安心」，而是「使他安定下來」。這就是「使動用法」——主語使賓語產生某種動作或狀態。「安」是形容詞，但在這裡表示「使……感到安定」。',
+      memoryTip: '「形容詞/動詞+賓語」且意思是「使賓語……」，就是使動用法。記「既來之，則安之」。',
+    },
+  ]
 
 
 const modules: ModuleCard[] = [
@@ -971,7 +2240,23 @@ function SubmitModal({
 
 // ===== 主組件 =====
 function App() {
-  const [page, setPage] = useState<Page>('home')
+  // 从 URL 路径读取初始页面
+  const getPageFromPath = (): Page => {
+    const path = window.location.pathname.replace(/\/+$/, '').replace(/^\//, '')
+    const validPages: Page[] = ['home', 'classic', 'quiz', 'result', 'words', 'words-learn', 'words-fill', 'words-quiz', 'words-result', 'grammar', 'pastpaper', 'wrongbook', 'stats', 'dialogue', 'puzzle', 'ancient-circle']
+    return validPages.includes(path as Page) ? (path as Page) : 'home'
+  }
+
+  const [page, setPage] = useState<Page>(getPageFromPath)
+
+  // 页面切换时更新 URL 路径，Vercel Analytics 免费版可见
+  useEffect(() => {
+    const newPath = page === 'home' ? '/' : '/' + page
+    if (window.location.pathname !== newPath) {
+      window.history.pushState(null, '', newPath)
+    }
+  }, [page])
+
   // ===== 模型設置 =====
   const [aiModel, setAiModel] = useState(() => localStorage.getItem('ai_model') || 'deepseek-v4-flash')
   const [showModelSettings, setShowModelSettings] = useState(false)
@@ -989,7 +2274,7 @@ function App() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [hasAnswered, setHasAnswered] = useState(false)
   const [showSubmit, setShowSubmit] = useState(false)
-  const [isMuted, setIsMuted] = useState(true)
+
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(true)
   const [feedbacks, setFeedbacks] = useState<FeedbackSubmission[]>([]) 
   const [submitName, setSubmitName] = useState('')
@@ -1028,9 +2313,10 @@ function App() {
   const [wordsPhase3Answered, setWordsPhase3Answered] = useState(false)
   const [wordsPhase3Score, setWordsPhase3Score] = useState(0)
   const [wordsPhase3Results, setWordsPhase3Results] = useState<Array<{word:string,sentence:string,correct:string,userInput:string,ok:boolean}>>([])
-  const [quizMode, setQuizMode] = useState<'classic' | 'grammar'>('classic')
-  const [wrongbook, setWrongbook] = useState<Question[]>([])
+  const [quizMode, setQuizMode] = useState<'classic' | 'grammar' | 'wrongbook'>('classic')
+  const [wrongbook, setWrongbook] = useState<WrongbookEntry[]>([])
   const [wrongbookType, setWrongbookType] = useState<'all' | QuestionType>('all')
+  const [selectedTextId, setSelectedTextId] = useState<string>('chushi')
   const [pastpaperYear, setPastpaperYear] = useState<number | 'all'>('all')
   const [pastpaperType, setPastpaperType] = useState<QuestionType | 'all'>('all')
   const [pastpaperIndex, setPastpaperIndex] = useState(0)
@@ -1080,11 +2366,13 @@ function App() {
 
   const currentUser = accounts.find(account => account.id === currentUserId) ?? null
 
-  const filteredQuestions = quizMode === 'grammar'
-    ? grammarQuestions
-    : activeTab === 'all'
-      ? questions
-      : questions.filter(q => q.type === activeTab)
+  const filteredQuestions = quizMode === 'wrongbook'
+    ? (wrongbookType === 'all' ? wrongbook : wrongbook.filter(e => e.question.type === wrongbookType)).map(e => e.question)
+    : quizMode === 'grammar'
+      ? grammarQuestions
+      : activeTab === 'all'
+        ? questions.filter(q => q.textId === selectedTextId)
+        : questions.filter(q => q.textId === selectedTextId && q.type === activeTab)
 
   const currentQuestion = filteredQuestions[currentIndex]
 
@@ -1200,18 +2488,34 @@ function App() {
   }
 
   useEffect(() => {
-    const saved = localStorage.getItem('wrongbookQuestions')
+    // 優先加載新格式，如無則嘗試遷移舊格式
+    const saved = localStorage.getItem('wrongbookEntries')
     if (saved) {
       try {
         setWrongbook(JSON.parse(saved))
       } catch {
         setWrongbook([])
       }
+    } else {
+      const old = localStorage.getItem('wrongbookQuestions')
+      if (old) {
+        try {
+          const oldQuestions: Question[] = JSON.parse(old)
+          const migrated: WrongbookEntry[] = oldQuestions.map(q => ({
+            question: q,
+            addedAt: new Date().toISOString()
+          }))
+          setWrongbook(migrated)
+          localStorage.removeItem('wrongbookQuestions')
+        } catch {
+          setWrongbook([])
+        }
+      }
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('wrongbookQuestions', JSON.stringify(wrongbook))
+    localStorage.setItem('wrongbookEntries', JSON.stringify(wrongbook))
   }, [wrongbook])
 
   useEffect(() => {
@@ -1285,8 +2589,8 @@ function App() {
 
   const addWrongbook = (question: Question) => {
     setWrongbook(prev => {
-      if (prev.some(item => item.id === question.id)) return prev
-      return [...prev, question]
+      if (prev.some(entry => entry.question.id === question.id)) return prev
+      return [...prev, { question, addedAt: new Date().toISOString() }]
     })
   }
 
@@ -1360,15 +2664,15 @@ function App() {
       setPastpaperSelected(null)
       setPastpaperAnswered(false)
     } else {
-      setPastpaperIndex(0)
-      setPastpaperSelected(null)
-      setPastpaperAnswered(false)
+      setScore(pastpaperScore)
+      setPage('pastpaper-result')
     }
   }
 
   const clearWrongbook = () => {
+    if (!window.confirm('確定要清空所有錯題嗎？此操作無法撤銷。')) return
     setWrongbook([])
-    localStorage.removeItem('wrongbookQuestions')
+    localStorage.removeItem('wrongbookEntries')
   }
 
   const startQuiz = (tab: QuestionType | 'all') => {
@@ -1568,7 +2872,7 @@ function App() {
   if (page === 'home') {
     return (
       <div
-        className="min-h-screen bg-[#fafaf8] text-gray-900 relative"
+        className="min-h-screen bg-[#fafaf8] text-gray-900 relative animate-fadeIn"
         style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
       >
         {/* 頂部導航欄 */}
@@ -1585,6 +2889,12 @@ function App() {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-gray-400 hidden md:block">香港 DSE 中文科備考</span>
+              <button
+                onClick={() => setIsPanelCollapsed(false)}
+                className="lg:hidden flex items-center gap-1 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-full text-xs font-medium text-emerald-700 transition-all"
+              >
+                📊 統計/登錄
+              </button>
               <div className="relative">
                 <button
                   onClick={() => setShowModelSettings(!showModelSettings)}
@@ -1627,7 +2937,9 @@ function App() {
         </header>
 
         {/* Hero 區域 */}
-        <div className="max-w-5xl mx-auto px-6 pt-10 pb-6">
+        <div className="max-w-5xl mx-auto px-6 pt-10 pb-6 relative">
+          <div className="absolute right-0 top-0 w-96 h-96 bg-gradient-to-br from-emerald-50 via-amber-50/50 to-transparent rounded-full blur-3xl opacity-60 -z-10" />
+          <div className="absolute right-20 top-10 text-8xl opacity-[0.04] select-none -z-10" style={{ fontFamily: "'Noto Serif SC', serif" }}>文</div>
           <div className="flex items-end gap-4 mb-1">
             <h1
               className="text-4xl font-black text-gray-900 leading-tight"
@@ -1650,13 +2962,13 @@ function App() {
                 key={mod.id}
                 onClick={() => {
                   if (mod.status !== 'live') return
-                  if (mod.id === 'grammar') startGrammar()
+                  if (mod.id === 'grammar') setPage('grammar')
                   else if (mod.id === 'pastpaper') startPastpaper()
                   else setPage(mod.id)
                 }}
                 className={`
                   relative text-left bg-white rounded-2xl border border-gray-100 border-l-4 ${mod.accentColor}
-                  p-5 shadow-sm transition-all duration-200 group
+                  p-5 shadow-sm transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:ring-offset-2
                   ${mod.status === 'live'
                     ? 'hover:-translate-y-1 hover:shadow-md cursor-pointer'
                     : 'opacity-60 cursor-default'
@@ -1707,7 +3019,8 @@ function App() {
 
         {/* 右側統計與登錄面板 */}
         {!isPanelCollapsed ? (
-          <div className="hidden lg:flex lg:flex-col lg:gap-4 fixed top-28 right-6 w-80 z-20">
+          <>
+            <div className="hidden lg:flex lg:flex-col lg:gap-4 fixed top-28 right-6 w-80 z-20">
             <div className="flex justify-end">
               <button
                 onClick={() => setIsPanelCollapsed(true)}
@@ -1794,6 +3107,53 @@ function App() {
               )}
             </div>
           </div>
+
+          {/* 移動端/平板遮罩面板 */}
+          <div className="lg:hidden fixed inset-0 z-50">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setIsPanelCollapsed(true)} />
+            <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl overflow-y-auto">
+              <div className="flex justify-end p-3">
+                <button onClick={() => setIsPanelCollapsed(true)} className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600 shadow-sm hover:bg-gray-50">收起 ✕</button>
+              </div>
+              <div className="px-4 pb-6 space-y-4">
+                <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <div><div className="text-xs uppercase tracking-[0.18em] text-gray-400 mb-1">統計中心</div><h3 className="text-lg font-bold text-gray-900">班級匯總</h3></div>
+                    <button onClick={() => { setIsPanelCollapsed(true); setPage('stats') }} className="text-xs text-emerald-600 hover:text-emerald-700">查看詳情</button>
+                  </div>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p>已註冊同學：<span className="font-semibold text-gray-900">{accounts.length}</span></p>
+                    <p>已記錄成績：<span className="font-semibold text-gray-900">{userStats.length}</span> 位</p>
+                    <p>當前登錄：<span className="font-semibold text-gray-900">{currentUser ? currentUser.name : '未登錄'}</span></p>
+                  </div>
+                </div>
+                <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-bold text-gray-900">帳號登錄</h3>
+                    <button onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setAuthError(null) }} className="text-xs text-emerald-600 hover:text-emerald-700">{authMode === 'login' ? '註冊' : '登錄'}</button>
+                  </div>
+                  {currentUser ? (
+                    <div>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold text-sm">{currentUser.name[0]}</div>
+                        <div><p className="font-semibold text-gray-900 text-sm">{currentUser.name}</p><p className="text-xs text-gray-400">{currentUser.email}</p></div>
+                      </div>
+                      <button onClick={handleLogout} className="w-full rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 py-2 text-sm font-semibold hover:bg-rose-100 transition-colors">退出登錄</button>
+                    </div>
+                  ) : (
+                    <form onSubmit={(e: React.FormEvent) => { e.preventDefault(); authMode === 'login' ? handleLogin() : handleRegister() }} className="space-y-2">
+                      {authMode === 'register' && <input value={authName} onChange={e => setAuthName(e.target.value)} placeholder="姓名" className="w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-400" required />}
+                      <input value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="郵箱" type="email" className="w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-400" required />
+                      <input value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="密碼" type="password" className="w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-400" required minLength={4} />
+                      {authError && <p className="text-xs text-rose-500">{authError}</p>}
+                      <button type="submit" className="w-full rounded-2xl bg-emerald-500 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors">{authMode === 'login' ? '登錄' : '註冊'}</button>
+                    </form>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          </>
         ) : (
           <div className="hidden lg:flex fixed top-28 right-6 z-20">
             <button
@@ -1804,40 +3164,6 @@ function App() {
             </button>
           </div>
         )}
-
-        {/* 左下角：小貓吉祥物 */}
-        <div className="fixed bottom-6 left-6 z-20 flex flex-col items-center gap-2">
-          {/* 聲音開關標籤 */}
-          <button
-            onClick={() => {
-              const v = document.getElementById('cat-mascot') as HTMLVideoElement
-              if (v) {
-                v.muted = !v.muted
-                setIsMuted(v.muted)
-              }
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm transition-all ${
-              isMuted
-                ? 'bg-white border-gray-200 text-gray-400 hover:border-emerald-300 hover:text-emerald-600'
-                : 'bg-emerald-50 border-emerald-300 text-emerald-600'
-            }`}
-          >
-            <span>{isMuted ? '🔇' : '🔊'}</span>
-            <span>{isMuted ? '已靜音' : '聲音開啟'}</span>
-          </button>
-          {/* 小貓視頻 */}
-          <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-white shadow-lg bg-gray-100">
-            <video
-              id="cat-mascot"
-              src="/cat.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
 
         {/* 右下角：投稿按鈕 */}
         <button
@@ -1885,11 +3211,13 @@ function App() {
 
   // ==================== 範文學習：選題型 ====================
   if (page === 'classic') {
+    const selectedText = DSE_TEXTS.find(t => t.id === selectedTextId) ?? DSE_TEXTS[0]
+    const textQuestions = questions.filter(q => q.textId === selectedTextId)
     const quizModes = [
-      { tab: 'all' as const, emoji: '🎯', title: '全部題型', desc: `共 ${questions.length} 題，詞義 + 句式 + 拆句`, accent: 'border-l-gray-400', iconBg: 'bg-gray-50', iconColor: 'text-gray-600' },
-      { tab: 'vocab' as const, emoji: '📖', title: '詞義辨析', desc: `共 ${questions.filter(q => q.type === 'vocab').length} 題，古今異義 · 實詞虛詞`, accent: 'border-l-emerald-500', iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-      { tab: 'sentence' as const, emoji: '🔤', title: '特殊句式', desc: `共 ${questions.filter(q => q.type === 'sentence').length} 題，判斷句 · 倒裝句 · 被動句`, accent: 'border-l-amber-400', iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
-      { tab: 'parse' as const, emoji: '🔍', title: '拆句理解', desc: `共 ${questions.filter(q => q.type === 'parse').length} 題，成分分析 · 語序還原`, accent: 'border-l-violet-400', iconBg: 'bg-violet-50', iconColor: 'text-violet-600' },
+      { tab: 'all' as const, emoji: '🎯', title: '全部題型', desc: `共 ${textQuestions.length} 題，詞義 + 句式 + 拆句`, accent: 'border-l-gray-400', iconBg: 'bg-gray-50', iconColor: 'text-gray-600' },
+      { tab: 'vocab' as const, emoji: '📖', title: '詞義辨析', desc: `共 ${textQuestions.filter(q => q.type === 'vocab').length} 題，古今異義 · 實詞虛詞`, accent: 'border-l-emerald-500', iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
+      { tab: 'sentence' as const, emoji: '🔤', title: '特殊句式', desc: `共 ${textQuestions.filter(q => q.type === 'sentence').length} 題，判斷句 · 倒裝句 · 被動句`, accent: 'border-l-amber-400', iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
+      { tab: 'parse' as const, emoji: '🔍', title: '拆句理解', desc: `共 ${textQuestions.filter(q => q.type === 'parse').length} 題，成分分析 · 語序還原`, accent: 'border-l-violet-400', iconBg: 'bg-violet-50', iconColor: 'text-violet-600' },
     ]
 
     return (
@@ -1902,10 +3230,32 @@ function App() {
             </button>
             <div className="w-px h-4 bg-gray-200" />
             <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: "'Noto Serif SC', serif" }}>
-              📜 範文重點詞句 · 《出師表》
+              📜 範文重點詞句 · 《{selectedText.title}》
             </span>
           </div>
         </header>
+
+        {/* 文本選擇器 */}
+        <div className="border-b border-gray-100 bg-white/60">
+          <div className="max-w-4xl mx-auto px-6 py-3">
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {DSE_TEXTS.map((text) => (
+                <button
+                  key={text.id}
+                  onClick={() => setSelectedTextId(text.id)}
+                  className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition whitespace-nowrap ${
+                    selectedTextId === text.id
+                      ? 'bg-emerald-500 text-white shadow-sm'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {text.title}
+                  <span className="ml-1 opacity-60">{text.author} · {text.dynasty}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         <div className="max-w-4xl mx-auto px-6 pt-10 pb-20">
           <h2
@@ -1914,7 +3264,7 @@ function App() {
           >
             選擇練習題型
           </h2>
-          <p className="text-gray-500 text-sm mb-8">根據你的備考需要，選擇專項練習或全部混合練習。</p>
+          <p className="text-gray-500 text-sm mb-8">根據你的備考需要，選擇專項練習或全部混合練習。當前文本共 {textQuestions.length} 題。</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {quizModes.map(({ tab, emoji, title, desc, accent, iconBg, iconColor }) => (
@@ -1941,29 +3291,6 @@ function App() {
           </div>
         </div>
 
-        {/* 左下角：小貓吉祥物 */}
-        <div className="fixed bottom-6 left-6 z-20 flex flex-col items-center gap-2">
-          <button
-            onClick={() => {
-              const v = document.getElementById('cat-mascot2') as HTMLVideoElement
-              if (v) {
-                v.muted = !v.muted
-                setIsMuted(v.muted)
-              }
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm transition-all ${
-              isMuted
-                ? 'bg-white border-gray-200 text-gray-400 hover:border-emerald-300 hover:text-emerald-600'
-                : 'bg-emerald-50 border-emerald-300 text-emerald-600'
-            }`}
-          >
-            <span>{isMuted ? '🔇' : '🔊'}</span>
-            <span>{isMuted ? '已靜音' : '聲音開啟'}</span>
-          </button>
-          <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-white shadow-lg bg-gray-100">
-            <video id="cat-mascot2" src="/cat.mp4" autoPlay loop muted playsInline className="w-full h-full object-cover" />
-          </div>
-        </div>
         {/* 投稿按鈕 */}
         <button
           onClick={() => setShowSubmit(true)}
@@ -2005,9 +3332,7 @@ function App() {
         )}
       </div>
     )
-  }
-
-  // ==================== 實詞虛詞專項：專題入口 ====================
+  }  // ==================== 實詞虛詞專項：專題入口 ====================
   if (page === 'words') {
     return (
       <div className="min-h-screen bg-[#fafaf8]" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
@@ -2065,7 +3390,7 @@ function App() {
 
             <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm p-5 md:p-6">
               <div className="rounded-[28px] overflow-hidden border border-gray-100 bg-gray-50 aspect-[4/3] mb-5">
-                <img src={wordCards[0].image} alt={wordCards[0].word} className="w-full h-full object-cover" />
+                <img src={wordCards[0].image} alt={wordCards[0].word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
               </div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-semibold">示例卡片</span>
@@ -2119,7 +3444,7 @@ function App() {
           <div className="grid md:grid-cols-[0.95fr_1.05fr] gap-6 items-stretch">
             {/* 圖片 */}
             <div className="rounded-[28px] overflow-hidden border border-gray-100 bg-gray-50 min-h-[240px]">
-              <img src={card.image} alt={card.word} className="w-full h-full object-cover" />
+              <img src={card.image} alt={card.word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
             </div>
             {/* 內容 */}
             <div className="flex flex-col justify-between">
@@ -2192,7 +3517,7 @@ function App() {
         <div className="bg-white rounded-[32px] p-5 md:p-6 shadow-sm max-w-2xl w-full border border-gray-100">
           <div className="grid md:grid-cols-[0.95fr_1.05fr] gap-6 items-stretch">
             <div className="rounded-[28px] overflow-hidden border border-gray-100 bg-gray-50 min-h-[280px]">
-              <img src={card.image} alt={card.word} className="w-full h-full object-cover" />
+              <img src={card.image} alt={card.word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center justify-between gap-3 mb-3">
@@ -2281,7 +3606,7 @@ function App() {
         <div className="bg-white rounded-[32px] p-5 md:p-6 shadow-sm max-w-2xl w-full border border-gray-100">
           <div className="grid md:grid-cols-[0.95fr_1.05fr] gap-6 items-stretch">
             <div className="rounded-[28px] overflow-hidden border border-gray-100 bg-gray-50 min-h-[240px]">
-              <img src={card.image} alt={card.word} className="w-full h-full object-cover" />
+              <img src={card.image} alt={card.word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center justify-between mb-3">
@@ -2418,7 +3743,7 @@ function App() {
       <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
         <div className="max-w-5xl w-full">
           <div className="mb-6 flex items-center gap-3">
-            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回主頁</button>
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回</button>
             <div className="text-sm text-gray-500">歷年真題練習 · 共 {filteredPastpaperQuestions.length} 題</div>
           </div>
 
@@ -2497,7 +3822,7 @@ function App() {
                 <div className="grid gap-3">
                   {currentPastpaperQuestion.options.map((option) => {
                     const buttonStyle = !pastpaperAnswered
-                      ? 'bg-white border-gray-200 hover:border-rose-400 hover:bg-rose-50 text-gray-800 cursor-pointer'
+                      ? 'bg-white border-gray-200 hover:border-emerald-400 hover:bg-emerald-50 text-gray-800 cursor-pointer'
                       : option === currentPastpaperQuestion.correctAnswer
                         ? 'bg-emerald-50 border-emerald-400 text-emerald-800'
                         : option === pastpaperSelected
@@ -2543,22 +3868,67 @@ function App() {
     const filters: Array<'all' | QuestionType> = ['all', 'vocab', 'sentence', 'parse']
     const displayWrongbook = wrongbookType === 'all'
       ? wrongbook
-      : wrongbook.filter(item => item.type === wrongbookType)
+      : wrongbook.filter(entry => entry.question.type === wrongbookType)
+
+    // 統計各題型錯題數
+    const vocabCount = wrongbook.filter(e => e.question.type === 'vocab').length
+    const sentenceCount = wrongbook.filter(e => e.question.type === 'sentence').length
+    const parseCount = wrongbook.filter(e => e.question.type === 'parse').length
+    const maxType = vocabCount >= sentenceCount && vocabCount >= parseCount ? '詞義辨析'
+      : sentenceCount >= parseCount ? '特殊句式' : '拆句理解'
+
+    const startWrongbookQuiz = () => {
+      setQuizMode('wrongbook')
+      setCurrentIndex(0)
+      setScore(0)
+      setSelectedOption(null)
+      setHasAnswered(false)
+      setAnswerHistory([])
+      setPage('quiz')
+    }
 
     return (
       <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
         <div className="max-w-5xl w-full">
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回主頁</button>
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回</button>
             <div className="text-sm text-gray-500">錯題集 · 共 {wrongbook.length} 題</div>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-6">
-            <div className="mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">錯題集分類</h2>
-              <p className="text-sm text-gray-500 mt-1">按題型查看錯題，支持移出已掌握題目。</p>
+          {/* 統計摘要卡片 */}
+          {wrongbook.length > 0 && (
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className={`rounded-2xl border p-4 shadow-sm ${maxType === '詞義辨析' ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-gray-100'}`}>
+                <div className="text-2xl font-bold text-emerald-600">{vocabCount}</div>
+                <div className="text-xs text-gray-500 mt-1">詞義辨析</div>
+              </div>
+              <div className={`rounded-2xl border p-4 shadow-sm ${maxType === '特殊句式' ? 'bg-amber-50 border-amber-300' : 'bg-white border-gray-100'}`}>
+                <div className="text-2xl font-bold text-amber-600">{sentenceCount}</div>
+                <div className="text-xs text-gray-500 mt-1">特殊句式</div>
+              </div>
+              <div className={`rounded-2xl border p-4 shadow-sm ${maxType === '拆句理解' ? 'bg-violet-50 border-violet-300' : 'bg-white border-gray-100'}`}>
+                <div className="text-2xl font-bold text-violet-600">{parseCount}</div>
+                <div className="text-xs text-gray-500 mt-1">拆句理解</div>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
+          )}
+
+          {/* 重新練習按鈕 + 分類篩選 */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">錯題集分類</h2>
+                <p className="text-sm text-gray-500 mt-1">按題型查看錯題，支持移出已掌握題目與重新練習。</p>
+              </div>
+              <button
+                onClick={startWrongbookQuiz}
+                disabled={wrongbook.length === 0}
+                className="px-5 py-3 rounded-2xl bg-violet-500 hover:bg-violet-600 transition-colors text-white font-bold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed text-sm whitespace-nowrap"
+              >
+                重新練習錯題 ({wrongbook.length})
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-4">
               {filters.map((type) => (
                 <button
                   key={type}
@@ -2573,8 +3943,18 @@ function App() {
 
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
             {displayWrongbook.length === 0 ? (
-              <div className="text-center py-16 text-gray-500">
-                當前沒有錯題，繼續練習可以自動收錄錯題。
+              <div className="text-center py-16">
+                <div className="text-5xl mb-4">📚</div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">還沒有錯題</h3>
+                <p className="text-sm text-gray-400 mb-6 max-w-sm mx-auto">
+                  繼續練習範文題目或句式專練，答錯的題目會自動收錄到這裡。
+                </p>
+                <button
+                  onClick={() => setPage('classic')}
+                  className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors"
+                >
+                  去練習 →
+                </button>
               </div>
             ) : (
               <div className="space-y-4">
@@ -2582,7 +3962,9 @@ function App() {
                   <span className="text-sm text-gray-500">已篩選 {displayWrongbook.length} 題</span>
                   <button onClick={clearWrongbook} className="text-xs px-3 py-2 rounded-full bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition">清空錯題集</button>
                 </div>
-                {displayWrongbook.map((item) => (
+                {displayWrongbook.map((entry) => {
+                  const item = entry.question
+                  return (
                   <div key={item.id} className="rounded-3xl border border-gray-100 p-5 shadow-sm">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
                       <div>
@@ -2592,7 +3974,7 @@ function App() {
                         </div>
                       </div>
                       <button
-                        onClick={() => setWrongbook(prev => prev.filter(q => q.id !== item.id))}
+                        onClick={() => setWrongbook(prev => prev.filter(e => e.question.id !== item.id))}
                         className="text-xs px-3 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
                       >
                         移出錯題
@@ -2611,12 +3993,183 @@ function App() {
                         </div>
                       )}
                     </div>
-                    <div className="text-xs text-gray-500">正確答案：{item.correctAnswer}</div>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div className="text-xs text-gray-500">正確答案：{item.correctAnswer}</div>
+                      <div className="text-xs text-gray-400">加入時間：{new Date(entry.addedAt).toLocaleDateString('zh-HK')}</div>
+                    </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
+        </div>
+      </div>
+    )
+  }
+  // ==================== 句式結構專練：介紹頁 ====================
+  if (page === 'grammar') {
+    return (
+      <div className="min-h-screen bg-[#fafaf8]" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
+        <header className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+          <div className="max-w-4xl mx-auto px-6 py-3 flex items-center gap-3">
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 transition-colors text-sm font-medium">← 返回</button>
+            <div className="w-px h-4 bg-gray-200" />
+            <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: "'Noto Serif SC', serif" }}>⚙️ 句式結構專練</span>
+          </div>
+        </header>
+
+        <div className="max-w-4xl mx-auto px-6 pt-10 pb-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-sm font-semibold mb-4">
+            <span>語法專項練習</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            <span>{grammarQuestions.length} 題</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-4" style={{ fontFamily: "'Noto Serif SC', serif" }}>
+            掌握文言句式，
+            <br />
+            讀懂古文結構。
+          </h1>
+          <p className="text-gray-500 leading-relaxed text-base md:text-lg max-w-2xl mb-8">
+            系統練習判斷句、倒裝句、被動句、省略句等 DSE 常考句式，在真實文句中學會分辨句子結構，提升文言文翻譯與理解能力。
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-4 mb-8">
+            {[
+              { emoji: '✅', title: '判斷句', desc: '「……也」、「乃……」、「即……」等典型判斷句式', example: '此誠危急存亡之秋也' },
+              { emoji: '🔄', title: '倒裝句', desc: '賓語前置、狀語後置、定語後置等語序變化', example: '受任於敗軍之際' },
+              { emoji: '📥', title: '被動句', desc: '「見……於」、「為……所」、「被」等被動標誌', example: '吾長見笑於大方之家' },
+              { emoji: '✂️', title: '省略句', desc: '主語省略、賓語省略、介詞省略等常見省略', example: '一鼓作氣，再而衰，三而竭' },
+            ].map((item) => (
+              <div key={item.title} className="rounded-2xl bg-white border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">{item.emoji}</span>
+                  <h3 className="font-bold text-gray-900">{item.title}</h3>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed mb-2">{item.desc}</p>
+                <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-1.5 italic">例：「{item.example}」</p>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => startGrammar()}
+            className="px-8 py-4 rounded-2xl bg-amber-500 hover:bg-amber-600 transition-colors text-white font-bold shadow-sm text-lg"
+          >
+            開始練習 ({grammarQuestions.length} 題) →
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+
+  // ==================== 統計中心頁面 ====================
+  if (page === 'stats') {
+    const currentUserStats = currentUserId ? userStats.find(s => s.userId === currentUserId) : undefined
+    const totalUsers = accounts.length
+    const usersWithStats = userStats.length
+    const allTimeAvg = usersWithStats > 0
+      ? Math.round(userStats.reduce((sum, s) => sum + Math.round((s.vocabCorrect + s.sentenceCorrect + s.parseCorrect + s.wordsCorrect + s.pastpaperCorrect) / Math.max(1, s.vocabTotal + s.sentenceTotal + s.parseTotal + s.wordsTotal + s.pastpaperTotal) * 100), 0) / usersWithStats)
+      : 0
+
+    return (
+      <div className="min-h-screen bg-[#fafaf8]" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
+        <header className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+          <div className="max-w-4xl mx-auto px-6 py-3 flex items-center gap-3">
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 transition-colors text-sm font-medium">← 返回</button>
+            <div className="w-px h-4 bg-gray-200" />
+            <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: "'Noto Serif SC', serif" }}>📊 統計中心</span>
+          </div>
+        </header>
+
+        <div className="max-w-4xl mx-auto px-6 pt-10 pb-20">
+          <h1 className="text-3xl font-black text-gray-900 mb-2" style={{ fontFamily: "'Noto Serif SC', serif" }}>學習統計</h1>
+          <p className="text-gray-500 text-sm mb-8">班級匯總與個人學習數據</p>
+
+          {/* 班級概覽卡片 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            {[
+              { label: '已註冊同學', value: totalUsers, emoji: '👥', color: 'bg-blue-50 text-blue-600' },
+              { label: '已記錄成績', value: usersWithStats, emoji: '📝', color: 'bg-emerald-50 text-emerald-600' },
+              { label: '全班正確率', value: allTimeAvg + '%', emoji: '📊', color: 'bg-amber-50 text-amber-600' },
+              { label: '錯題總數', value: wrongbook.length, emoji: '📕', color: 'bg-violet-50 text-violet-600' },
+            ].map((item) => (
+              <div key={item.label} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center">
+                <div className="text-2xl mb-1">{item.emoji}</div>
+                <div className="text-2xl font-bold text-gray-900">{item.value}</div>
+                <div className="text-xs text-gray-500 mt-1">{item.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* 個人統計 */}
+          {currentUserStats ? (
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">我的學習數據</h2>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {[
+                  { label: '詞義辨析', correct: currentUserStats.vocabCorrect, total: currentUserStats.vocabTotal },
+                  { label: '特殊句式', correct: currentUserStats.sentenceCorrect, total: currentUserStats.sentenceTotal },
+                  { label: '拆句理解', correct: currentUserStats.parseCorrect, total: currentUserStats.parseTotal },
+                  { label: '實詞虛詞', correct: currentUserStats.wordsCorrect, total: currentUserStats.wordsTotal },
+                  { label: '歷史真題', correct: currentUserStats.pastpaperCorrect, total: currentUserStats.pastpaperTotal },
+                ].map((item) => {
+                  const pct = item.total > 0 ? Math.round((item.correct / item.total) * 100) : 0
+                  return (
+                    <div key={item.label} className="bg-gray-50 rounded-2xl p-3 text-center">
+                      <div className="text-xs text-gray-500 mb-1">{item.label}</div>
+                      <div className="text-lg font-bold text-gray-900">{item.correct}<span className="text-sm text-gray-300">/{item.total || 0}</span></div>
+                      <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                        <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: pct + '%' }} />
+                      </div>
+                      <div className="text-xs text-emerald-600 mt-1">{pct}%</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-6 text-center">
+              <div className="text-4xl mb-3">🔐</div>
+              <h2 className="text-lg font-bold text-gray-900 mb-2">請先登錄以查看個人統計</h2>
+              <p className="text-sm text-gray-500 mb-4">登錄後可以追蹤你的學習進度和答題記錄</p>
+              <button
+                onClick={() => setIsPanelCollapsed(false)}
+                className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors"
+              >
+                回主頁登錄 →
+              </button>
+            </div>
+          )}
+
+          {/* 最近註冊用戶 */}
+          {accounts.length > 0 && (
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">已註冊同學 ({accounts.length})</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {accounts.slice(0, 20).map((acct) => {
+                  const stats = userStats.find(s => s.userId === acct.id)
+                  const avgPct = stats
+                    ? Math.round((stats.vocabCorrect + stats.sentenceCorrect + stats.parseCorrect + stats.wordsCorrect + stats.pastpaperCorrect) / Math.max(1, stats.vocabTotal + stats.sentenceTotal + stats.parseTotal + stats.wordsTotal + stats.pastpaperTotal) * 100)
+                    : null
+                  return (
+                    <div key={acct.id} className="flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50">
+                      <div>
+                        <span className="font-medium text-gray-900 text-sm">{acct.name}</span>
+                        <span className="text-xs text-gray-400 ml-2">{acct.email}</span>
+                      </div>
+                      {avgPct !== null ? (
+                        <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">正確率 {avgPct}%</span>
+                      ) : (
+                        <span className="text-xs text-gray-400">尚無記錄</span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     )
@@ -2744,6 +4297,7 @@ function App() {
 
     // 清除全部記錄
     const handleClearAll = () => {
+      if (!window.confirm('確定要清空所有對話記錄嗎？此操作無法撤銷。')) return
       const initMsg: DialogueMessage[] = [{
         id: 1, role: 'author',
         content: currentAuthorConfig.greeting,
@@ -2759,6 +4313,7 @@ function App() {
     // 刪除選中的消息
     const handleDeleteSelected = () => {
       if (dialogueSelectedMsgs.length === 0) return
+      if (!window.confirm(`確定要刪除已選的 ${dialogueSelectedMsgs.length} 條消息嗎？`)) return
       const remaining = dialogueMessages.filter(m => !dialogueSelectedMsgs.includes(m.id))
       setDialogueMessages(remaining)
       saveMessages(remaining)
@@ -3052,7 +4607,7 @@ function App() {
       return (
         <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
           <div className="max-w-2xl w-full">
-            <button onClick={goHome} className="mb-4 text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回主頁</button>
+            <button onClick={goHome} className="mb-4 text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回</button>
 
             <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-4 text-center">
               <div className="text-4xl mb-2">🎭</div>
@@ -3795,7 +5350,7 @@ function App() {
         <div className="max-w-3xl mx-auto px-4 py-6">
           {/* 頂部導航 */}
           <div className="flex items-center justify-between mb-5">
-            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回主頁</button>
+            <button onClick={goHome} className="text-gray-400 hover:text-gray-700 text-sm transition-colors font-medium">← 返回</button>
             <div className="text-center">
               <h1 className="text-lg font-bold text-gray-900">古風朋友圈</h1>
               <p className="text-xs text-gray-400">古人也發朋友圈</p>
@@ -3888,11 +5443,71 @@ function App() {
     )
   }
 
+
+  // ==================== Pastpaper 成績單 ====================
+  if (page === 'pastpaper-result') {
+    const total = filteredPastpaperQuestions.length
+    const pct = total > 0 ? Math.round((score / total) * 100) : 0
+    return (
+      <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
+        <div className="bg-white rounded-3xl p-10 shadow-sm max-w-md w-full border border-gray-100 text-center">
+          <div className="text-6xl mb-6">{pct === 100 ? '🏆' : pct >= 60 ? '👍' : '💪'}</div>
+          <h2
+            className="text-3xl font-black text-gray-900 mb-2"
+            style={{ fontFamily: "'Noto Serif SC', serif" }}
+          >
+            {pct === 100 ? '完美！' : pct >= 60 ? '不錯！' : '繼續加油！'}
+          </h2>
+          <p className="text-gray-400 text-sm mb-6">歷史真題刷題</p>
+          <div className="text-5xl font-bold text-emerald-500 mb-2">
+            {score} <span className="text-2xl text-gray-300">/ {total}</span>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-2 mb-8 mt-4">
+            <div className="bg-emerald-400 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={goHome}
+              className="py-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors font-semibold text-gray-700"
+            >
+              返回主頁
+            </button>
+            <button
+              onClick={() => {
+                setScore(0)
+                setPastpaperScore(0)
+                setPastpaperIndex(0)
+                setPastpaperSelected(null)
+                setPastpaperAnswered(false)
+                setPage('pastpaper')
+              }}
+              className="py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 transition-colors font-bold text-white"
+            >
+              再來一次
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // ==================== 成績單 ====================
   if (page === 'result') {
     const total = filteredQuestions.length
     const pct = Math.round((score / total) * 100)
-    const tabLabel = quizMode === 'grammar' ? '句式結構專練' : activeTab === 'all' ? '全部題型' : activeTab === 'vocab' ? '詞義辨析' : activeTab === 'sentence' ? '特殊句式' : '拆句理解'
+    const tabLabel = quizMode === 'wrongbook' ? '錯題重練' : quizMode === 'grammar' ? '句式結構專練' : activeTab === 'all' ? '全部題型' : activeTab === 'vocab' ? '詞義辨析' : activeTab === 'sentence' ? '特殊句式' : '拆句理解'
+    const retryAction = quizMode === 'wrongbook'
+      ? () => {
+          const wbQuestions = wrongbookType === 'all' ? wrongbook : wrongbook.filter(e => e.question.type === wrongbookType)
+          const qs = [...wbQuestions.map(e => e.question)].sort(() => Math.random() - 0.5)
+          if (qs.length === 0) return
+          setCurrentIndex(0)
+          setScore(0)
+          setSelectedOption(null)
+          setHasAnswered(false)
+          setPage('quiz')
+        }
+      : () => { setCurrentIndex(0); setScore(0); setPage('quiz'); setSelectedOption(null); setHasAnswered(false) }
     return (
       <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
         <div className="bg-white rounded-3xl p-10 shadow-sm max-w-md w-full border border-gray-100 text-center">
@@ -3907,8 +5522,8 @@ function App() {
           <div className="text-5xl font-bold text-emerald-500 mb-2">
             {score} <span className="text-2xl text-gray-300">/ {total}</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-2.5 mb-8 mt-4">
-            <div className="bg-emerald-400 h-2.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+          <div className="w-full bg-gray-100 rounded-full h-2 mb-8 mt-4">
+            <div className="bg-emerald-400 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -3918,7 +5533,7 @@ function App() {
               返回主頁
             </button>
             <button
-              onClick={() => { setCurrentIndex(0); setScore(0); setPage('quiz'); setSelectedOption(null); setHasAnswered(false) }}
+              onClick={retryAction}
               className="py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 transition-colors font-bold text-white"
             >
               再來一次
@@ -3927,9 +5542,7 @@ function App() {
         </div>
       </div>
     )
-  }
-
-  // ==================== 答題界面 ====================
+  }  // ==================== 答題界面 ====================
 
   return (
     <div className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center p-4" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
@@ -3938,7 +5551,7 @@ function App() {
         <div className="flex justify-between items-center mb-2 px-1">
           <div className="flex items-center gap-2">
             <button
-              onClick={() => quizMode === 'grammar' ? goHome() : setPage('classic')}
+              onClick={() => quizMode === 'grammar' ? goHome() : quizMode === 'wrongbook' ? setPage('wrongbook') : setPage('classic')}
               className="text-gray-400 hover:text-gray-700 text-xs transition-colors font-medium"
             >
               ← 返回
@@ -3948,48 +5561,56 @@ function App() {
           </div>
           <span className="text-emerald-600 font-bold text-sm">得分 {score}</span>
         </div>
-        <div className="w-full bg-gray-100 rounded-full h-1.5">
-          <div className="bg-emerald-400 h-1.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="w-full bg-gray-100 rounded-full h-2">
+          <div className="bg-emerald-400 h-2 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
       </div>
 
       {/* 詞義題 */}
       {currentQuestion.type === 'vocab' && (
-        <div className="bg-white rounded-3xl p-8 shadow-sm max-w-lg w-full border border-gray-100">
-          <div className="aspect-square bg-gray-50 rounded-2xl mb-6 overflow-hidden border border-gray-100">
-            <img src={currentQuestion.image} alt={currentQuestion.word} className="w-full h-full object-cover" />
-          </div>
-          <div className="text-center mb-6">
-            <h2
-              className="text-5xl font-black text-gray-900 mb-3"
-              style={{ fontFamily: "'Noto Serif SC', serif" }}
-            >
-              {currentQuestion.word}
-            </h2>
-            <p className="text-gray-400 italic text-sm">「{currentQuestion.sentence}」</p>
-          </div>
-          <div className="grid gap-3 mb-4">
-            {currentQuestion.options.map((option) => (
-              <button
-                key={option}
-                className={`py-4 px-5 rounded-xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
-                onClick={() => handleAnswer(option)}
-              >
-                <span>{option}</span>
-                {hasAnswered && option === currentQuestion.correctAnswer && <span className="text-emerald-500">✓</span>}
-                {hasAnswered && option === selectedOption && option !== currentQuestion.correctAnswer && <span className="text-rose-400">✗</span>}
-              </button>
-            ))}
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm max-w-2xl w-full border border-gray-100">
+          <div className="flex flex-col md:flex-row gap-5 md:gap-6">
+            {/* 左側配圖 */}
+            <div className="md:w-5/12 flex-shrink-0">
+              <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100">
+                <img src={currentQuestion.image} alt={currentQuestion.word} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="100" y="110" text-anchor="middle" fill="%239ca3af" font-size="14"%3E圖片加載失敗%3C/text%3E%3C/svg%3E' }} />
+              </div>
+            </div>
+            {/* 右側文字與選項 */}
+            <div className="md:w-7/12 flex flex-col justify-center">
+              <div className="text-center md:text-left mb-4">
+                <h2
+                  className="text-4xl md:text-5xl font-black text-gray-900 mb-2"
+                  style={{ fontFamily: "'Noto Serif SC', serif" }}
+                >
+                  {currentQuestion.word}
+                </h2>
+                <p className="text-gray-400 italic text-sm">「{currentQuestion.sentence}」</p>
+              </div>
+              <div className="grid gap-2.5">
+                {currentQuestion.options.map((option) => (
+                  <button
+                    key={option}
+                    className={`py-3 px-4 rounded-2xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
+                    onClick={() => handleAnswer(option)}
+                  >
+                    <span>{option}</span>
+                    {hasAnswered && option === currentQuestion.correctAnswer && <span className="text-emerald-500">✓</span>}
+                    {hasAnswered && option === selectedOption && option !== currentQuestion.correctAnswer && <span className="text-rose-400">✗</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           {hasAnswered && (
-            <div className="mt-2">
+            <div className="mt-5 pt-5 border-t border-gray-100">
               <div className={`text-center mb-2 text-base font-bold ${selectedOption === currentQuestion.correctAnswer ? 'text-emerald-600' : 'text-rose-500'}`}>
                 {selectedOption === currentQuestion.correctAnswer ? '答對了！' : `正確答案：${currentQuestion.correctAnswer}`}
               </div>
               <p className="text-gray-500 text-xs text-center mb-4 px-2 leading-relaxed">{currentQuestion.explanation}</p>
               <button
                 onClick={handleNext}
-                className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 transition-colors text-base font-bold text-white"
+                className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 transition-colors text-base font-bold text-white"
               >
                 {currentIndex + 1 < filteredQuestions.length ? '下一題 →' : '查看成績'}
               </button>
@@ -4017,7 +5638,7 @@ function App() {
             {currentQuestion.options.map((option) => (
               <button
                 key={option}
-                className={`py-4 px-5 rounded-xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
+                className={`py-4 px-5 rounded-2xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
                 onClick={() => handleAnswer(option)}
               >
                 <span>{option}</span>
@@ -4073,7 +5694,7 @@ function App() {
             {currentQuestion.options.map((option) => (
               <button
                 key={option}
-                className={`py-4 px-5 rounded-xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
+                className={`py-4 px-5 rounded-2xl border transition-all text-sm font-medium text-left flex justify-between items-center ${getButtonStyle(option)}`}
                 onClick={() => handleAnswer(option)}
               >
                 <span>{option}</span>
